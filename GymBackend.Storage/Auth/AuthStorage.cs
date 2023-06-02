@@ -12,10 +12,17 @@ namespace GymBackend.Storage.Auth
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public async Task<List<Users>> GetUsersAsync()
+
+        public async Task<User> GetUserAsync()
+        {
+            var sql = "SELECT * FROM [Users].[Users] WHERE Username = 'piers'";
+            return await database.ExecuteQuerySingleAsync<User>(sql);
+        }
+
+        public async Task<List<User>> GetUsersAsync()
         {
             var sql = "SELECT * FROM [Users].[Users]";
-            var users = await database.ExecuteQueryAsync<Users>(sql);
+            var users = await database.ExecuteQueryAsync<User>(sql);
             return users.ToList();
         }
     }
