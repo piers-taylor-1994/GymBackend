@@ -11,7 +11,13 @@ namespace GymBackend.Service.Auth
         {
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
-        public async Task<List<Users>> GetUsersAsync()
+
+        public async Task<User> GetUserAsync()
+        {
+            return await storage.GetUserAsync();
+        }
+
+        public async Task<List<User>> GetUsersAsync()
         {
             return await storage.GetUsersAsync();
         }

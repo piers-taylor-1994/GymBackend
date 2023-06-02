@@ -4,6 +4,7 @@ namespace GymBackend.Core.Contracts.Auth
 {
     public interface IAuthStorage
     {
-        Task<List<Users>> GetUsersAsync();
+        Task<List<User>> GetUsersAsync();
+        Task<User> GetUserAsync();
     }
 }

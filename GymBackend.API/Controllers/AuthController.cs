@@ -22,20 +22,16 @@ namespace GymBackend.Controllers
             this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
-        //[HttpGet("Get")]
-        //public IEnumerable<Users> Get()
-        //{
-        //    return Users.Select(name => new Users
-        //    {
-        //        Name = name
-        //    })
-        //    .ToArray();
-        //}
-
-        [HttpGet("Get")]
-        public async Task<List<Users>> Get()
+        [HttpGet("")]
+        public async Task<List<User>> GetUsers()
         {
-            return await authService.GetUsersAsync();
+            return await authService.GetUsersAsync().ConfigureAwait(false);
+        }
+
+        [HttpGet("user")]
+        public async Task<User> GetUser()
+        {
+            return await authService.GetUserAsync().ConfigureAwait(false);
         }
     }
 }

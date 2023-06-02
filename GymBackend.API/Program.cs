@@ -8,6 +8,23 @@ var origins = "AllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 var configManager = builder.Configuration;
 
+
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(origins, builder =>
+//    {
+//        var corsConfig = configManager.GetSection("Cors:Origins");
+//        Console.WriteLine(corsConfig.ToString());
+//        var withOrigins = corsConfig.Get<string[]>();
+//        builder
+//            .WithOrigins(withOrigins)
+//            .AllowCredentials()
+//            .AllowAnyHeader()
+//            .AllowAnyMethod();
+//    });
+//});
+
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,6 +37,8 @@ builder.Services.AddScoped<IDatabase, Database>((services) =>
     return new Database(config.GetConnectionString("Database"));
 });
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthStorage, AuthStorage>();
 
@@ -31,6 +50,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors((policy) =>
+{
+    policy.AllowAnyOrigin();
+    policy.AllowAnyHeader();
+    policy.AllowAnyMethod();
+});
 
 app.UseHttpsRedirection();
 
