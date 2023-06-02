@@ -11,4 +11,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GymBackend.Core\GymBackend.Core.csproj" />
+    <ProjectReference Include="..\GymBackend.Service\GymBackend.Service.csproj" />
+    <ProjectReference Include="..\GymBackend.Storage\GymBackend.Storage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>
