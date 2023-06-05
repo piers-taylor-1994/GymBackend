@@ -17,8 +17,4 @@
     <ProjectReference Include="..\GymBackend.Storage\GymBackend.Storage.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>

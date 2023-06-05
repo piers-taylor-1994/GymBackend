@@ -13,10 +13,10 @@ namespace GymBackend.Storage.Auth
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<User> GetUserAsync()
+        public async Task<AuthUser?> FindUserAsync(string username)
         {
-            var sql = "SELECT * FROM [Users].[Users] WHERE Username = 'piers'";
-            return await database.ExecuteQuerySingleAsync<User>(sql);
+            var sql = "SELECT [Id], [Password] as PasswordHash FROM [Users].[Users] WHERE Username = @username";
+            return await database.ExecuteQuerySingleAsync<AuthUser>(sql, new { username });
         }
 
         public async Task<List<User>> GetUsersAsync()

@@ -1,6 +1,8 @@
+using GymBackend.API.Models;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Domains;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace GymBackend.Controllers
 {
@@ -8,11 +10,6 @@ namespace GymBackend.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private static readonly string[] Users = new[]
-        {
-        "Piers", "Jill", "Jacob", "Logan", "Trey"
-        };
-
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService authService;
 
@@ -22,16 +19,28 @@ namespace GymBackend.Controllers
             this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
+        [HttpGet("password/hash")]
+        public string GetPasswordHash(string password)
+        {
+            return authService.GetPasswordHashAsync(password);
+        }
+
         [HttpGet("")]
         public async Task<List<User>> GetUsers()
         {
             return await authService.GetUsersAsync().ConfigureAwait(false);
         }
 
-        [HttpGet("user")]
-        public async Task<User> GetUser()
+        [HttpPost("logon")]
+        public async Task<ActionResult<string>> Logon(Logon logon)
         {
-            return await authService.GetUserAsync().ConfigureAwait(false);
+            var authUser = await authService.LogonAsync(logon.Username, logon.Password).ConfigureAwait(false);
+
+            if (authUser == null) return new UnauthorizedResult();
+
+            var token = RandomNumberGenerator.GetInt32(10000, 100000).ToString();
+
+            return token;
         }
     }
 }
