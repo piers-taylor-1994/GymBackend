@@ -1,4 +1,4 @@
-﻿namespace GymBackend.Core.Domains
+﻿namespace GymBackend.Core.Domains.User
 {
     public class AuthUser
     {

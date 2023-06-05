@@ -1,7 +1,10 @@
 ﻿using GymBackend.Core.Contracts.Auth;
-using GymBackend.Core.Domains;
+using GymBackend.Core.Domains.User;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace GymBackend.Service.Auth
 {
@@ -104,11 +107,39 @@ namespace GymBackend.Service.Auth
             return authUser;
         }
 
+        public async Task<string> IssueToken(AuthUser user)
+        {
+            var header = new JwtHeader();
+            var issuer = "Piers Taylor";
+            var audience = "GymApp";
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var userName = await storage.GetNameByIdAsync(user.Id);
+            var userJSON = JsonSerializer.Serialize(userName, jsonOptions);
+            claims.Add(new Claim("name", userJSON));
+            claims.Add(new Claim("username", await storage.GetUsernameAsync(user.Id)));
+
+            var payload = new JwtPayload(issuer, audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddDays(30));
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = new JwtSecurityToken(header, payload);
+
+            return handler.WriteToken(token);
+        }
+
         public async Task<List<User>> GetUsersAsync()
         {
             return await storage.GetUsersAsync();
         }
-
-        
     }
 }

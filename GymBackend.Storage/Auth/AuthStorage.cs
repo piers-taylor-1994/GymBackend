@@ -1,5 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Auth;
-using GymBackend.Core.Domains;
+using GymBackend.Core.Domains.User;
 using YOTApp.Storage;
 
 namespace GymBackend.Storage.Auth
@@ -24,6 +24,18 @@ namespace GymBackend.Storage.Auth
             var sql = "SELECT * FROM [Users].[Users]";
             var users = await database.ExecuteQueryAsync<User>(sql);
             return users.ToList();
+        }
+
+        public async Task<Name?> GetNameByIdAsync(Guid id)
+        {
+            var sql = "SELECT [FirstName], [LastName] FROM [Users].[Users] WHERE Id = @id";
+            return await database.ExecuteQuerySingleAsync<Name>(sql, new { id });
+        }
+
+        public async Task<string?> GetUsernameAsync(Guid id)
+        {
+            var sql = "SELECT [Username] FROM [Users].[Users] WHERE Id = @id";
+            return await database.ExecuteQuerySingleAsync<string>(sql, new { id });
         }
     }
 }
