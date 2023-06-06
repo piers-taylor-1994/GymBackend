@@ -14,7 +14,7 @@ namespace GymBackend.Storage.Workouts
         }
         public async Task<List<Exercises>> GetAllExercisesAsync()
         {
-            var sql = "SELECT * FROM [Workouts].[Exercises]";
+            var sql = "SELECT *, [MuscleGroupId] as MuscleGroup FROM [Workouts].[Exercises]";
             var exercises = await database.ExecuteQueryAsync<Exercises>(sql);
             return exercises.ToList();
         }

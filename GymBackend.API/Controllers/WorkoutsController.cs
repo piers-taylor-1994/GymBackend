@@ -1,5 +1,4 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
-using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +15,7 @@ namespace GymBackend.API.Controllers
             this.service = service ?? throw new ArgumentNullException(nameof(service));
         }
         [HttpGet("")]
-        public async Task<List<Exercises>> GetUsers()
+        public async Task<List<Exercises>> GetExercises()
         {
             return await service.GetExercisesAsync().ConfigureAwait(false);
         }

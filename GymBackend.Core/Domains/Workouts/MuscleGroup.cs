@@ -1,6 +1,6 @@
 ﻿namespace GymBackend.Core.Domains.Workouts
 {
-    public enum MuscleGroups
+    public enum MuscleGroup
     {
         Shoulders = 0,
         Chest = 1,
