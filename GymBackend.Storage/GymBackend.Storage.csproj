@@ -16,4 +16,8 @@
     <ProjectReference Include="..\GymBackend.Core\GymBackend.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Workouts\" />
+  </ItemGroup>
+
 </Project>

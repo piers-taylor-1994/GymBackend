@@ -1,6 +1,9 @@
 using GymBackend.Core.Contracts.Auth;
+using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
+using GymBackend.Service.Workouts;
 using GymBackend.Storage.Auth;
+using GymBackend.Storage.Workouts;
 using YOTApp.Storage;
 
 var origins = "AllowSpecificOrigins";
@@ -39,6 +42,8 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthStorage, AuthStorage>();
+builder.Services.AddTransient<IWorkoutsService, WorkoutsService>();
+builder.Services.AddTransient<IWorkoutsStorage, WorkoutsStorage>();
 
 var app = builder.Build();
 
