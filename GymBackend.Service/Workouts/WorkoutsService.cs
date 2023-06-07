@@ -1,5 +1,6 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
+using System;
 
 namespace GymBackend.Service.Workouts
 {
@@ -14,6 +15,14 @@ namespace GymBackend.Service.Workouts
         public Task<List<Exercises>> GetExercisesAsync()
         {
             return storage.GetAllExercisesAsync();
+        }
+
+        public async Task<Routine> GetRoutineAsync(string userId)
+        {
+            var routineId = await storage.GetRoutineIdAsync(Guid.Parse(userId), DateTime.Now.Date);
+            var setsList = await storage.GetSetsByRoutineIdAsync(routineId);
+
+            return new Routine(setsList);
         }
     }
 }
