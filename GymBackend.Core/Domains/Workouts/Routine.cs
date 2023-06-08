@@ -2,11 +2,8 @@
 {
     public class Routine
     {
-        public List<Set> SetList { get; set; }
-
-        public Routine(List<Set> setList)
-        {
-            SetList = setList;
-        }
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public DateTime Date { get; set; }
     }
 }
