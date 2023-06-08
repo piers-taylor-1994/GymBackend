@@ -15,7 +15,7 @@ namespace GymBackend.API.Controllers
             this.service = service ?? throw new ArgumentNullException(nameof(service));
         }
         [HttpGet("")]
-        public async Task<List<Exercises>> GetExercises()
+        public async Task<List<Exercise>> GetExercises()
         {
             return await service.GetExercisesAsync().ConfigureAwait(false);
         }

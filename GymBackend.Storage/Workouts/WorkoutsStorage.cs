@@ -12,10 +12,10 @@ namespace GymBackend.Storage.Workouts
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public async Task<List<Exercises>> GetAllExercisesAsync()
+        public async Task<List<Exercise>> GetAllExercisesAsync()
         {
             var sql = "SELECT *, [MuscleGroupId] as MuscleGroup FROM [Workouts].[Exercises]";
-            var exercises = await database.ExecuteQueryAsync<Exercises>(sql);
+            var exercises = await database.ExecuteQueryAsync<Exercise>(sql);
             return exercises.ToList();
         }
 

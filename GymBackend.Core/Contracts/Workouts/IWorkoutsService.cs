@@ -4,7 +4,7 @@ namespace GymBackend.Core.Contracts.Workouts
 {
     public interface IWorkoutsService
     {
-        Task<List<Exercises>> GetExercisesAsync();
+        Task<List<Exercise>> GetExercisesAsync();
         Task<Routine> GetRoutineAsync(string userId);
     }
 }

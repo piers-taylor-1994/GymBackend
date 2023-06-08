@@ -12,7 +12,7 @@ namespace GymBackend.Service.Workouts
         {
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
-        public Task<List<Exercises>> GetExercisesAsync()
+        public Task<List<Exercise>> GetExercisesAsync()
         {
             return storage.GetAllExercisesAsync();
         }

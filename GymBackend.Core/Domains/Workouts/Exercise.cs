@@ -1,6 +1,6 @@
 ﻿namespace GymBackend.Core.Domains.Workouts
 {
-    public class Exercises
+    public class Exercise
     {
         public Guid Id { get; set; }
         public MuscleGroup MuscleGroup { get; set; }
