@@ -11,6 +11,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date);
         Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, Guid exerciseId);
         Task DeleteSetsForRoutineAsync(Guid id);
-        Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, Set set);
+        Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, SetUpdate set);
     }
 }

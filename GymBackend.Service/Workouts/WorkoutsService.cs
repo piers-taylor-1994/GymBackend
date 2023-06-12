@@ -18,9 +18,11 @@ namespace GymBackend.Service.Workouts
             return storage.GetAllExercisesAsync();
         }
 
-        public async Task<RoutineSet> GetRoutineAsync(string userId)
+        public async Task<RoutineSet?> GetRoutineAsync(string userId)
         {
-            var routine = await storage.GetRoutineAsync(Guid.Parse(userId), DateTime.Now.Date) ?? throw new Exception("Routine doesn't exist");
+            var routine = await storage.GetRoutineAsync(Guid.Parse(userId), DateTime.Now.Date);
+
+            if (routine == null) return null;
 
             var setsList = await storage.GetSetsByRoutineIdAsync(routine.Id);
 
@@ -46,7 +48,7 @@ namespace GymBackend.Service.Workouts
             return new RoutineSet(routine.Id, exerciseList);
         }
 
-        public async Task<RoutineSet> UpdateRoutineAsync(string id, List<Set> setList)
+        public async Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList)
         {
             if (setList.Count == 0) throw new Exception("No sets to update");
             var routine = await storage.GetRoutineAsync(Guid.Parse(id)) ?? throw new Exception("Routine can't be found");

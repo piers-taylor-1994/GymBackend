@@ -21,9 +21,9 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpGet("routine")]
-        public async Task<RoutineSet> GetRoutine(string userId)
+        public async Task<RoutineSet?> GetRoutine(string userId)
         {
-            return await service.GetRoutineAsync(userId).ConfigureAwait(false);
+           return await service.GetRoutineAsync(userId).ConfigureAwait(false);
         }
 
         [HttpPost("routine")]
@@ -33,7 +33,7 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPut("routine/{id}")]
-        public async Task<RoutineSet> UpdateRoutine(string id, List<Set> setList)
+        public async Task<RoutineSet> UpdateRoutine(string id, List<SetUpdate> setList)
         {
             return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
         }

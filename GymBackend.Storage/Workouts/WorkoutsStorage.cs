@@ -83,7 +83,7 @@ VALUES (
             await database.ExecuteAsync(sql, new { id });
         }
 
-        public async Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, Set set)
+        public async Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, SetUpdate set)
         {
             var updateSql = @"
 UPDATE 
@@ -96,10 +96,7 @@ WHERE [Id] = @Id";
 
             await database.ExecuteAsync(updateSql, set);
 
-            var sqlGet = "SELECT * FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId";
-            var setList = await database.ExecuteQueryAsync<Set>(sqlGet, new { routineId });
-
-            return setList.ToList();
+            return await GetSetsByRoutineIdAsync(routineId);
         }
     }
 }
