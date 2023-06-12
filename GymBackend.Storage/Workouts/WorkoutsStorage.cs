@@ -76,11 +76,11 @@ VALUES (
             return await GetSetsByRoutineIdAsync(routineId);
         }
 
-        public async Task DeleteSetsForRoutineAsync(Guid id)
+        public async Task DeleteSetFromRoutineAsync(Guid routineId, Guid setId)
         {
-            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @id";
+            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId AND [Id] = @setId";
 
-            await database.ExecuteAsync(sql, new { id });
+            await database.ExecuteAsync(sql, new { routineId, setId });
         }
 
         public async Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, SetUpdate set)
