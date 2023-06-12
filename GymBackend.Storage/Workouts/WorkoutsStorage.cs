@@ -15,7 +15,7 @@ namespace GymBackend.Storage.Workouts
 
         public async Task<List<Exercise>> GetAllExercisesAsync()
         {
-            var sql = "SELECT *, [MuscleGroupId] as MuscleGroup FROM [Workouts].[Exercises]";
+            var sql = "SELECT *, [Id] as ExerciseId, [MuscleGroupId] as MuscleGroup FROM [Workouts].[Exercises]";
             var exercises = await database.ExecuteQueryAsync<Exercise>(sql);
             return exercises.ToList();
         }
@@ -37,7 +37,7 @@ namespace GymBackend.Storage.Workouts
         public async Task<List<Set>> GetSetsByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
-SELECT s.[Id], e.[MuscleGroupId] as MuscleGroup, e.[Name], e.[Description], s.[Weight], s.[Sets], s.[Reps]
+SELECT s.[Id], e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, e.[Name], e.[Description], s.[Weight], s.[Sets], s.[Reps]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]

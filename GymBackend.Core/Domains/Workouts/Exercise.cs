@@ -2,7 +2,7 @@
 {
     public class Exercise
     {
-        public Guid Id { get; set; }
+        public Guid ExerciseId { get; set; }
         public MuscleGroup MuscleGroup { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
