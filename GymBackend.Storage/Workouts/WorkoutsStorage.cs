@@ -1,6 +1,7 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using YOTApp.Storage;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GymBackend.Storage.Workouts
 {
@@ -97,6 +98,15 @@ WHERE [Id] = @Id";
             await database.ExecuteAsync(updateSql, set);
 
             return await GetSetsByRoutineIdAsync(routineId);
+        }
+
+        public async Task<List<Routine>> GetRoutinesAsync(Guid userId)
+        {
+            var sql = "SELECT * FROM [Workouts].[Routine] WHERE [UserId] = @userId ORDER BY [Date] DESC";
+
+            var routines = await database.ExecuteQueryAsync<Routine>(sql, new { userId });
+
+            return routines.ToList();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
-using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Service.Workouts
@@ -69,6 +68,18 @@ namespace GymBackend.Service.Workouts
             }
 
             return new RoutineSet(routine.Id, updatedSetList);
+        }
+
+        public Task<List<Routine>> GetRoutinesHistoryAsync(string userId)
+        {
+            return storage.GetRoutinesAsync(Guid.Parse(userId));
+        }
+
+        public async Task<RoutineSet> GetRoutineHistoryAsync(string id)
+        {
+            var setsList = await storage.GetSetsByRoutineIdAsync(Guid.Parse(id));
+
+            return new RoutineSet(Guid.Parse(id), setsList);
         }
     }
 }

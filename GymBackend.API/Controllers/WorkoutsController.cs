@@ -37,5 +37,17 @@ namespace GymBackend.API.Controllers
         {
             return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
         }
+
+        [HttpGet("routine/history")]
+        public async Task<List<Routine>> GetRoutinesHistory(string userId)
+        {
+            return await service.GetRoutinesHistoryAsync(userId).ConfigureAwait(false);
+        }
+
+        [HttpGet("routine/history/{id}")]
+        public async Task<RoutineSet> GetRoutineHistory(string id)
+        {
+            return await service.GetRoutineHistoryAsync(id).ConfigureAwait(false);
+        }
     }
 }
