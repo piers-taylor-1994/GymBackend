@@ -1,18 +1,20 @@
 using GymBackend.API.Models;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Domains.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymBackend.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
-        private readonly IAuthService service;
+        private readonly IAuthManager service;
 
-        public AuthController(ILogger<AuthController> logger, IAuthService authService)
+        public AuthController(ILogger<AuthController> logger, IAuthManager authService)
         {
             _logger = logger;
             this.service = authService ?? throw new ArgumentNullException(nameof(authService));

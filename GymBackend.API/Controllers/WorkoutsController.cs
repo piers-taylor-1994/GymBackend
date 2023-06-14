@@ -1,4 +1,5 @@
-﻿using GymBackend.Core.Contracts.Workouts;
+﻿using GymBackend.Core.Contracts;
+using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace GymBackend.API.Controllers
     public class WorkoutsController : ControllerBase
     {
         private readonly IWorkoutsService service;
+        private readonly IAuthService authService;
 
-        public WorkoutsController(IWorkoutsService service)
+        public WorkoutsController(IWorkoutsService service, IAuthService authService)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
+            this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
         [HttpGet("")]
         public async Task<List<Exercise>> GetExercises()
@@ -21,15 +24,15 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpGet("routine")]
-        public async Task<RoutineSet?> GetRoutine(string userId)
+        public async Task<RoutineSet?> GetRoutine()
         {
-           return await service.GetRoutineAsync(userId).ConfigureAwait(false);
+            return await service.GetRoutineAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
 
         [HttpPost("routine")]
-        public async Task<RoutineSet> PostRoutine(string userId, List<string> exerciseIds)
+        public async Task<RoutineSet> PostRoutine(List<string> exerciseIds)
         {
-            return await service.AddRoutineAsync(userId, exerciseIds).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
         }
 
         [HttpPut("routine/{id}")]
@@ -39,9 +42,9 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpGet("routine/history")]
-        public async Task<List<Routine>> GetRoutinesHistory(string userId)
+        public async Task<List<Routine>> GetRoutinesHistory()
         {
-            return await service.GetRoutinesHistoryAsync(userId).ConfigureAwait(false);
+            return await service.GetRoutinesHistoryAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
 
         [HttpGet("routine/history/{id}")]

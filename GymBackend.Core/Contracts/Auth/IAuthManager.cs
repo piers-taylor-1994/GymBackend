@@ -2,7 +2,7 @@
 
 namespace GymBackend.Core.Contracts.Auth
 {
-    public interface IAuthService
+    public interface IAuthManager
     {
         string GetPasswordHashAsync(string password);
         Task<AuthUser?> LogonAsync(string username, string password);

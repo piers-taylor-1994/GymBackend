@@ -1,6 +1,8 @@
-﻿using GymBackend.Core.Contracts.Auth;
+﻿using GymBackend.API.Authentication;
+using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Domains.User;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -10,18 +12,19 @@ namespace GymBackend.Service.Auth
 {
     // All password hashing code taken from
     // https://github.com/dotnet/AspNetCore/blob/main/src/Identity/Extensions.Core/src/PasswordHasher.cs
-    public class AuthService : IAuthService
+    public class AuthManager : IAuthManager
     {
         // Change these and all passwords become invalid
         private const int iterCount = 10000;
         private const int saltSize = 256;
         private const KeyDerivationPrf prf = KeyDerivationPrf.HMACSHA512;
         private const int bytesRequested = 256 / 8;
-
+        private readonly IConfiguration configuration;
         private readonly IAuthStorage storage;
 
-        public AuthService(IAuthStorage storage)
+        public AuthManager(IConfiguration configuration, IAuthStorage storage)
         {
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
@@ -109,9 +112,21 @@ namespace GymBackend.Service.Auth
 
         public async Task<string> IssueToken(AuthUser user)
         {
-            var header = new JwtHeader();
-            var issuer = "Piers Taylor";
-            var audience = "GymApp";
+            var authConfig = configuration.GetRequiredSection("Authentication");
+
+            var keyType = authConfig.GetValue<string>("KeyType");
+            SecurityKey key = keyType switch
+            {
+                "pem" => KeyHandler.ReadRSAKey(authConfig.GetValue<string>("KeyPath")),
+                "x509" => KeyHandler.ReadX509Key(authConfig.GetValue<string>("KeyPath"), authConfig.GetValue<string>("KeyPassword")),
+                _ => throw new Exception("Auth key not found")
+            };
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
+            var header = new JwtHeader(credentials);
+
+            var audience = authConfig.GetValue<string>("Audience");
+            var issuer = authConfig.GetValue<string>("Issuer");
 
             var claims = new List<Claim>
             {

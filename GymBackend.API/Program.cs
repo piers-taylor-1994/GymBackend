@@ -1,36 +1,55 @@
+using GymBackend.API.Authentication;
+using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
 using GymBackend.Service.Workouts;
 using GymBackend.Storage.Auth;
 using GymBackend.Storage.Workouts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using YOTApp.Storage;
 
 var origins = "AllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.Local.json", true, true);
 var configManager = builder.Configuration;
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy(origins, builder =>
-//    {
-//        var corsConfig = configManager.GetSection("Cors:Origins");
-//        Console.WriteLine(corsConfig.ToString());
-//        var withOrigins = corsConfig.Get<string[]>();
-//        builder
-//            .WithOrigins(withOrigins)
-//            .AllowCredentials()
-//            .AllowAnyHeader()
-//            .AllowAnyMethod();
-//    });
-//});
+Configuration.EnableAuth(builder.Services, configManager);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(origins, builder =>
+    {
+        var corsConfig = configManager.GetSection("Cors:Origins");
+        var withOrigins = corsConfig.Get<string[]>();
+        builder
+            .WithOrigins(withOrigins)
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers(c =>
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        c.Filters.Add(new AuthorizeFilter(policy));
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(Swagger.Configure);
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddScoped<IDatabase, Database>((services) =>
 {
@@ -38,8 +57,9 @@ builder.Services.AddScoped<IDatabase, Database>((services) =>
     return new Database(config.GetConnectionString("Database"));
 });
 
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddTransient<IAuthManager, AuthManager>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthStorage, AuthStorage>();
 builder.Services.AddTransient<IWorkoutsService, WorkoutsService>();
@@ -54,16 +74,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors((policy) =>
-{
-    policy.AllowAnyOrigin();
-    policy.AllowAnyHeader();
-    policy.AllowAnyMethod();
-});
+app.UseCors(origins);
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

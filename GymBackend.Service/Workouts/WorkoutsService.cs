@@ -17,9 +17,9 @@ namespace GymBackend.Service.Workouts
             return storage.GetAllExercisesAsync();
         }
 
-        public async Task<RoutineSet?> GetRoutineAsync(string userId)
+        public async Task<RoutineSet?> GetRoutineAsync(Guid userId)
         {
-            var routine = await storage.GetRoutineAsync(Guid.Parse(userId), DateTime.Now.Date);
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date);
 
             if (routine == null) return null;
 
@@ -28,11 +28,11 @@ namespace GymBackend.Service.Workouts
             return new RoutineSet(routine.Id, setsList);
         }
 
-        public async Task<RoutineSet> AddRoutineAsync(string userId, List<string> exerciseIds)
+        public async Task<RoutineSet> AddRoutineAsync(Guid userId, List<string> exerciseIds)
         {
             if (exerciseIds.Count == 0) throw new Exception("No exercises to add");
 
-            var routine = await storage.GetRoutineAsync(Guid.Parse(userId), DateTime.Now.Date) ?? await storage.AddRoutineAsync(Guid.NewGuid(), Guid.Parse(userId), DateTime.Now.Date);
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
 
             var exerciseList = await storage.GetSetsByRoutineIdAsync(routine.Id);
 
@@ -70,9 +70,9 @@ namespace GymBackend.Service.Workouts
             return new RoutineSet(routine.Id, updatedSetList);
         }
 
-        public Task<List<Routine>> GetRoutinesHistoryAsync(string userId)
+        public Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)
         {
-            return storage.GetRoutinesAsync(Guid.Parse(userId));
+            return storage.GetRoutinesAsync(userId);
         }
 
         public async Task<RoutineSet> GetRoutineHistoryAsync(string id)
