@@ -11,6 +11,7 @@ namespace GymBackend.API.Authentication
             var audience = authConfig.GetValue<string>("Audience");
             var issuer = authConfig.GetValue<string>("Issuer");
 
+            //https://www.claudiobernasconi.ch/2016/04/17/creating-a-self-signed-x509-certificate-using-openssl-on-windows/
             var keyType = authConfig.GetValue<string>("KeyType");
             SecurityKey key = keyType switch
             {
