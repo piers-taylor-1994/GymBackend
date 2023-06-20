@@ -123,7 +123,9 @@ namespace GymBackend.Service.Auth
             };
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
-            var header = new JwtHeader(credentials);
+            //var header = new JwtHeader(credentials);
+            var header = new JwtHeader();
+
 
             var audience = authConfig.GetValue<string>("Audience");
             var issuer = authConfig.GetValue<string>("Issuer");
