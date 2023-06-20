@@ -17,7 +17,7 @@ namespace GymBackend.API.Authentication
             {
                 "pem" => KeyHandler.ReadRSAKey(authConfig.GetValue<string>("KeyPath")),
                 "x509" => KeyHandler.ReadX509Key(authConfig.GetValue<string>("KeyPath"), authConfig.GetValue<string>("KeyPassword")),
-                _=> throw new Exception("Auth key not found")
+                _ => throw new Exception("Auth key not found")
             };
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
