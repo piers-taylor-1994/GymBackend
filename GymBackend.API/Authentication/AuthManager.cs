@@ -122,11 +122,8 @@ namespace GymBackend.Service.Auth
                 _ => throw new Exception("Auth key not found")
             };
 
-            Console.WriteLine("Test message");
             var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
-            //var header = new JwtHeader(credentials);
-            var header = new JwtHeader();
-
+            var header = new JwtHeader(credentials);
 
             var audience = authConfig.GetValue<string>("Audience");
             var issuer = authConfig.GetValue<string>("Issuer");

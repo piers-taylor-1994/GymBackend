@@ -20,13 +20,9 @@ namespace GymBackend.API.Authentication
 
         public static SecurityKey ReadX509Key(string path, string password) 
         {
-            //var cert = new X509Certificate2(path, password);
-            //var rsaPrivate = cert.GetRSAPrivateKey();
-            //var key = new RsaSecurityKey(rsaPrivate);
-
-            var s_key = new byte[32];
-
-            var key = new SymmetricSecurityKey(s_key) { KeyId = Guid.NewGuid().ToString() };
+            var cert = new X509Certificate2(path, password);
+            var rsaPrivate = cert.GetRSAPrivateKey();
+            var key = new RsaSecurityKey(rsaPrivate);
 
             return key;
         }
