@@ -41,6 +41,12 @@ namespace GymBackend.API.Controllers
             return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
         }
 
+        [HttpDelete("routine/set/{id}")]
+        public async Task RemoveExerciseFromRoutine(string id)
+        {
+            await service.DeleteSetFromRoutineAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
+        }
+
         [HttpGet("routine/history")]
         public async Task<List<Routine>> GetRoutinesHistory()
         {

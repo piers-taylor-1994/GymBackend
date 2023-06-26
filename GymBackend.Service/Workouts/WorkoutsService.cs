@@ -34,20 +34,13 @@ namespace GymBackend.Service.Workouts
 
             var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
 
-            var exerciseList = await storage.GetSetsByRoutineIdAsync(routine.Id);
+            var exerciseList = new List<Set>();
 
-            for (int i = 0; i < exerciseList.Count; i++)
-            {
-                if (!exerciseIds.Contains(exerciseList[i].ExerciseId.ToString()))
-                {
-                    await storage.DeleteSetFromRoutineAsync(routine.Id, exerciseList[i].Id);
-                    exerciseList.Remove(exerciseList[i]);
-                }
-            }
+            await storage.DeleteSetsFromRoutineAsync(routine.Id);
 
             foreach (var exerciseId in exerciseIds)
             {
-                if (!exerciseList.Any(e => e.ExerciseId == Guid.Parse(exerciseId))) exerciseList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(exerciseId));
+                exerciseList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(exerciseId));
             }
 
             if (exerciseList.Count == 0) throw new Exception("Error adding exercises to routine");
@@ -68,6 +61,15 @@ namespace GymBackend.Service.Workouts
             }
 
             return new RoutineSet(routine.Id, updatedSetList);
+        }
+
+        public async Task DeleteSetFromRoutineAsync(Guid userId, string id)
+        {
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? throw new Exception("Cannot find routine");
+            await storage.DeleteSetFromRoutineAsync(routine.Id, Guid.Parse(id));
+
+            var sets = await storage.GetSetsByRoutineIdAsync(routine.Id);
+            if (sets.Count == 0) await storage.DeleteRoutineAsync(userId, routine.Id);
         }
 
         public Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)

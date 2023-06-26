@@ -1,7 +1,6 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using YOTApp.Storage;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GymBackend.Storage.Workouts
 {
@@ -84,6 +83,13 @@ VALUES (
             await database.ExecuteAsync(sql, new { routineId, setId });
         }
 
+        public async Task DeleteSetsFromRoutineAsync(Guid routineId)
+        {
+            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId";
+
+            await database.ExecuteAsync(sql, new { routineId });
+        }
+
         public async Task<List<Set>> UpdateSetsForRoutineAsync(Guid routineId, SetUpdate set)
         {
             var updateSql = @"
@@ -107,6 +113,13 @@ WHERE [Id] = @Id";
             var routines = await database.ExecuteQueryAsync<Routine>(sql, new { userId });
 
             return routines.ToList();
+        }
+
+        public async Task DeleteRoutineAsync(Guid userId, Guid routineId)
+        {
+            var sql = "DELETE FROM [Workouts].[Routine] WHERE [UserId] = @userId AND [Id] = @routineId";
+
+            await database.ExecuteAsync(sql, new { userId, routineId });
         }
     }
 }
