@@ -37,11 +37,12 @@ namespace GymBackend.Storage.Workouts
         public async Task<List<Set>> GetSetsByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
-SELECT s.[Id], e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, e.[Name], e.[Description], s.[Weight], s.[Sets], s.[Reps]
+SELECT s.[Id], e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, e.[Name], e.[Description], s.[Weight], s.[Sets], s.[Reps], s.[Order]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]
-WHERE s.[RoutineId] = @routineId";
+WHERE s.[RoutineId] = @routineId
+ORDER BY s.[Order]";
             var sets = await database.ExecuteQueryAsync<Set>(sql, new { routineId });
             return sets.ToList();
         }
@@ -62,16 +63,17 @@ VALUES (
             return routine ?? throw new Exception("Create routine failed");
         }
 
-        public async Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, Guid exerciseId)
+        public async Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, Guid exerciseId, int order)
         {
             var sqlCreate = @"
-INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId])
+INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Order])
 VALUES (
     @id,
     @routineId,
-    @exerciseId
+    @exerciseId,
+    @order
 )";
-            await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId });
+            await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId, order });
 
             return await GetSetsByRoutineIdAsync(routineId);
         }
@@ -104,6 +106,20 @@ WHERE [Id] = @Id";
             await database.ExecuteAsync(updateSql, set);
 
             return await GetSetsByRoutineIdAsync(routineId);
+        }
+
+        public async Task<Dictionary<Guid, int>> UpdateSetOrderAsync(Dictionary<Guid, int> setDict)
+        {
+            var sql = @"
+UPDATE
+[Workouts].[Sets]
+SET
+[Order] = @value
+WHERE [Id] = @key";
+
+            await database.ExecuteAsync(sql, setDict);
+
+            return setDict;
         }
 
         public async Task<List<Routine>> GetRoutinesAsync(Guid userId)

@@ -38,9 +38,9 @@ namespace GymBackend.Service.Workouts
 
             await storage.DeleteSetsFromRoutineAsync(routine.Id);
 
-            foreach (var exerciseId in exerciseIds)
+            for (int i = 0; i < exerciseIds.Count; i++)
             {
-                exerciseList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(exerciseId));
+                exerciseList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(exerciseIds[i]), i);
             }
 
             if (exerciseList.Count == 0) throw new Exception("Error adding exercises to routine");
@@ -70,6 +70,18 @@ namespace GymBackend.Service.Workouts
 
             var sets = await storage.GetSetsByRoutineIdAsync(routine.Id);
             if (sets.Count == 0) await storage.DeleteRoutineAsync(userId, routine.Id);
+        }
+
+        public async Task<Dictionary<Guid, int>> UpdateSetOrderAsync(Dictionary<Guid, int> setOrder)
+        {
+            try
+            {
+                return await storage.UpdateSetOrderAsync(setOrder);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot update set order", ex);
+            }
         }
 
         public Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)
