@@ -6,9 +6,9 @@ namespace GymBackend.Core.Contracts.Workouts
     {
         Task<List<Exercise>> GetExercisesAsync();
         Task<RoutineSet?> GetRoutineAsync(Guid userId);
-        Task<RoutineSet> AddRoutineAsync(Guid userId, List<ExerciseSet> exerciseList);
-        //Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList);
-        Task DeleteSetFromRoutineAsync(Guid userId, string exerciseId);
+        Task<RoutineSet> AddRoutineAsync(Guid userId, List<string> exerciseIds);
+        Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList);
+        Task DeleteSetFromRoutineAsync(Guid userId, string id);
         Task<Dictionary<Guid, int>> UpdateSetOrderAsync(Dictionary<Guid, int> setOrder);
         Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId);
         Task<RoutineSet> GetRoutineHistoryAsync(string id);
