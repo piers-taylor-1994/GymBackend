@@ -34,18 +34,24 @@ namespace GymBackend.Service.Workouts
 
             var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
 
-            var exerciseList = new List<Set>();
+            var setList = await storage.GetSetsByRoutineIdAsync(routine.Id);
 
-            await storage.DeleteSetsFromRoutineAsync(routine.Id);
-
-            for (int i = 0; i < exerciseIds.Count; i++)
+            foreach (var set in setList)
             {
-                exerciseList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(exerciseIds[i]), i);
+                if (!exerciseIds.Any(e => Guid.Parse(e) == set.ExerciseId)) 
+                {
+                    setList = await storage.DeleteSetFromRoutineAsync(routine.Id, set.Id);
+                }
             }
 
-            if (exerciseList.Count == 0) throw new Exception("Error adding exercises to routine");
+            foreach (var id in exerciseIds)
+            {
+                if (!setList.Any(s => s.ExerciseId == Guid.Parse(id))) setList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(id), setList.Count);
+            }
 
-            return new RoutineSet(routine.Id, exerciseList);
+            if (setList.Count == 0) throw new Exception("Error adding exercises to routine");
+
+            return new RoutineSet(routine.Id, setList);
         }
 
         public async Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList)
