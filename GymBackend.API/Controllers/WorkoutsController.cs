@@ -1,4 +1,5 @@
-﻿using GymBackend.Core.Contracts;
+﻿using GymBackend.API.Models;
+using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
@@ -30,28 +31,28 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("routine")]
-        public async Task<RoutineSet> PostRoutine(List<string> exerciseIds)
+        public async Task<RoutineSet> AddRoutine(List<ExerciseSet> exerciseList)
         {
-            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseList).ConfigureAwait(false);
         }
 
-        [HttpPut("routine/{id}")]
-        public async Task<RoutineSet> UpdateRoutine(string id, List<SetUpdate> setList)
+        //[HttpPut("routine/{id}")]
+        //public async Task<RoutineSet> UpdateRoutine(string id, List<SetUpdate> setList)
+        //{
+        //    return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
+        //}
+
+        [HttpDelete("routine/set/{exerciseId}")]
+        public async Task RemoveSetFromRoutine(string exerciseId)
         {
-            return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
+            await service.DeleteSetFromRoutineAsync(authService.CurrentUserId(), exerciseId).ConfigureAwait(false);
         }
 
-        [HttpDelete("routine/set/{id}")]
-        public async Task RemoveSetFromRoutine(string id)
-        {
-            await service.DeleteSetFromRoutineAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
-        }
-
-        [HttpPut("routine/set/order")]
-        public async Task<Dictionary<Guid, int>> UpdateSetOrder([FromBody]Dictionary<Guid, int> setDict)
-        {
-            return await service.UpdateSetOrderAsync(setDict).ConfigureAwait(false);
-        }
+        //[HttpPut("routine/set/order")]
+        //public async Task<Dictionary<Guid, int>> UpdateSetOrder([FromBody]Dictionary<Guid, int> setDict)
+        //{
+        //    return await service.UpdateSetOrderAsync(setDict).ConfigureAwait(false);
+        //}
 
         [HttpGet("routine/history")]
         public async Task<List<Routine>> GetRoutinesHistory()

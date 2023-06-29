@@ -63,26 +63,29 @@ VALUES (
             return routine ?? throw new Exception("Create routine failed");
         }
 
-        public async Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, Guid exerciseId, int order)
+        public async Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, Guid exerciseId, SetUpdate set)
         {
             var sqlCreate = @"
-INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Order])
+INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Weight], [Sets], [Reps], [Order])
 VALUES (
     @id,
     @routineId,
     @exerciseId,
-    @order
+    @Weight,
+    @Sets,
+    @Reps,
+    @Order
 )";
-            await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId, order });
+            await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId, set.Weight, set.Sets, set.Reps, set.Order });
 
             return await GetSetsByRoutineIdAsync(routineId);
         }
 
-        public async Task DeleteSetFromRoutineAsync(Guid routineId, Guid setId)
+        public async Task DeleteSetFromRoutineAsync(Guid routineId, Guid exerciseId)
         {
-            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId AND [Id] = @setId";
+            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId AND [ExerciseId] = @exerciseId";
 
-            await database.ExecuteAsync(sql, new { routineId, setId });
+            await database.ExecuteAsync(sql, new { routineId, exerciseId });
         }
 
         public async Task DeleteSetsFromRoutineAsync(Guid routineId)
@@ -100,7 +103,8 @@ UPDATE
 SET
     [Weight] = @Weight,
     [Sets] = @Sets,
-    [Reps] = @Reps
+    [Reps] = @Reps,
+    [Order] = @Order
 WHERE [Id] = @Id";
 
             await database.ExecuteAsync(updateSql, set);
