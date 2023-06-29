@@ -124,7 +124,15 @@ WHERE [Id] = @key";
 
         public async Task<List<Routine>> GetRoutinesAsync(Guid userId)
         {
-            var sql = "SELECT * FROM [Workouts].[Routine] WHERE [UserId] = @userId ORDER BY [Date] DESC";
+            var sql = @"
+SELECT DISTINCT [r].* 
+FROM [Workouts].[Routine] r
+INNER JOIN [Workouts].[Sets] s ON [r].[Id] = [s].[RoutineId] 
+WHERE [UserId] = @userId
+AND [s].[Weight] IS NOT NULL 
+AND [s].[Sets] IS NOT NULL 
+AND [s].[Reps] IS NOT NULL 
+ORDER BY [Date] DESC";
 
             var routines = await database.ExecuteQueryAsync<Routine>(sql, new { userId });
 
