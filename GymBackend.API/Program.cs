@@ -1,10 +1,13 @@
 using GymBackend.API.Authentication;
 using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Auth;
+using GymBackend.Core.Contracts.Patch;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
+using GymBackend.Service.Patch;
 using GymBackend.Service.Workouts;
 using GymBackend.Storage.Auth;
+using GymBackend.Storage.Patch;
 using GymBackend.Storage.Workouts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -64,6 +67,8 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthStorage, AuthStorage>();
 builder.Services.AddTransient<IWorkoutsService, WorkoutsService>();
 builder.Services.AddTransient<IWorkoutsStorage, WorkoutsStorage>();
+builder.Services.AddTransient<IPatchService, PatchService>();
+builder.Services.AddTransient<IPatchStorage, PatchStorage>();
 
 var app = builder.Build();
 
