@@ -17,10 +17,17 @@ namespace GymBackend.API.Controllers
             this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
+
         [HttpGet("")]
         public async Task<List<Exercise>> GetExercises()
         {
             return await service.GetExercisesAsync().ConfigureAwait(false);
+        }
+
+        [HttpGet("search/{muscle}")]
+        public async Task<List<Guid>> SearchExercises(MuscleGroup muscle)
+        {
+            return await service.SearchExercisesAsync(muscle).ConfigureAwait(false);
         }
 
         [HttpGet("routine")]

@@ -20,6 +20,18 @@ namespace GymBackend.Storage.Workouts
             return exercises.ToList();
         }
 
+        public async Task<List<Guid>> GetAllSearchExercisesAsync(MuscleGroup muscle)
+        {
+            var sql = @"
+SELECT e.[Id]
+FROM [Workouts].[Exercises] e
+INNER JOIN [Workouts].[ExerciseMuscles] em on e.Id = em.ExerciseId
+INNER JOIN [Workouts].[MuscleGroups] m on em.MuscleId = m.Id
+WHERE em.MuscleId = @muscle";
+            var exercises = await database.ExecuteQueryAsync<Guid>(sql, new { muscle });
+            return exercises.ToList();
+        }
+
         public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date)
         {
             var sql = "SELECT * FROM [Workouts].[Routine] WHERE [UserId] = @userId AND [Date] = @date";

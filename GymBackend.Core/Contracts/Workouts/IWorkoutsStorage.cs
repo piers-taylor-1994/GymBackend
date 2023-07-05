@@ -5,6 +5,7 @@ namespace GymBackend.Core.Contracts.Workouts
     public interface IWorkoutsStorage
     {
         Task<List<Exercise>> GetAllExercisesAsync();
+        Task<List<Guid>> GetAllSearchExercisesAsync(MuscleGroup muscle);
         Task<Routine?> GetRoutineAsync(Guid userId, DateTime date);
         Task<Routine?> GetRoutineAsync(Guid id);
         Task<List<Set>> GetSetsByRoutineIdAsync(Guid routineId);

@@ -13,6 +13,7 @@
         Hips = 8,
         Quads = 9,
         Hamstrings = 10,
-        Calves = 11
+        Calves = 11,
+        Thighs = 12
     }
 }

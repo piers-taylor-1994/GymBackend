@@ -5,6 +5,7 @@ namespace GymBackend.Core.Contracts.Workouts
     public interface IWorkoutsService
     {
         Task<List<Exercise>> GetExercisesAsync();
+        Task<List<Guid>> SearchExercisesAsync(MuscleGroup muscle);
         Task<RoutineSet?> GetRoutineAsync(Guid userId);
         Task<RoutineSet> AddRoutineAsync(Guid userId, List<string> exerciseIds);
         Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList);
