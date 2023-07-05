@@ -1,5 +1,6 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
+using System.Runtime.InteropServices;
 using YOTApp.Storage;
 
 namespace GymBackend.Storage.Workouts
@@ -158,6 +159,22 @@ ORDER BY [Date] DESC";
             var sql = "DELETE FROM [Workouts].[Routine] WHERE [UserId] = @userId AND [Id] = @routineId";
 
             await database.ExecuteAsync(sql, new { userId, routineId });
+        }
+
+        public async Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId)
+        {
+            var sql = @"
+SELECT TOP(1) s.*, r.Date
+FROM Workouts.Sets s
+INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
+WHERE s.ExerciseId = @exerciseId
+AND r.UserId = @userId
+AND s.Weight IS NOT NULL
+AND s.Sets IS NOT NULL
+AND s.Reps IS NOT NULL
+ORDER BY r.Date desc";
+
+            return await database.ExecuteQuerySingleAsync<Set>(sql, new { userId, exerciseId }) ?? null;
         }
     }
 }

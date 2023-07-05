@@ -13,5 +13,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<Dictionary<Guid, int>> UpdateSetOrderAsync(Dictionary<Guid, int> setOrder);
         Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId);
         Task<RoutineSet> GetRoutineHistoryAsync(string id);
+        Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds);
     }
 }

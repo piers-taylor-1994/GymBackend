@@ -71,5 +71,11 @@ namespace GymBackend.API.Controllers
         {
             return await service.GetRoutineHistoryAsync(id).ConfigureAwait(false);
         }
+
+        [HttpPost("routine/last")]
+        public async Task<List<Set>> GetLastSetForExercises([FromBody]List<string> exerciseIds)
+        {
+            return await service.GetLastSetForExercisesAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
+        }
     }
 }

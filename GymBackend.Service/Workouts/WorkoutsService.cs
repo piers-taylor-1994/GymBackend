@@ -106,5 +106,18 @@ namespace GymBackend.Service.Workouts
 
             return new RoutineSet(Guid.Parse(id), setsList);
         }
+
+        public async Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds)
+        {
+            var setList = new List<Set>();
+
+            foreach (var exerciseId in exerciseIds)
+            {
+                var set = await storage.GetSetByExerciseIdAsync(userId, Guid.Parse(exerciseId));
+                if (set != null) setList.Add(set);
+            }
+
+            return setList;
+        }
     }
 }
