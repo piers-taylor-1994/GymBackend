@@ -1,5 +1,6 @@
 ﻿using GymBackend.API.Authentication;
 using GymBackend.Core.Contracts.Auth;
+using GymBackend.Core.Contracts.Patch;
 using GymBackend.Core.Domains.User;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.IdentityModel.Tokens;
@@ -21,11 +22,13 @@ namespace GymBackend.Service.Auth
         private const int bytesRequested = 256 / 8;
         private readonly IConfiguration configuration;
         private readonly IAuthStorage storage;
+        private readonly IPatchStorage patchStorage;
 
-        public AuthManager(IConfiguration configuration, IAuthStorage storage)
+        public AuthManager(IConfiguration configuration, IAuthStorage storage, IPatchStorage patchStorage)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            this.patchStorage = patchStorage ?? throw new ArgumentNullException(nameof(patchStorage));
         }
 
         private static uint ReadNetworkByteOrder(byte[] buffer, int offset)
@@ -141,8 +144,10 @@ namespace GymBackend.Service.Auth
 
             var userName = await storage.GetNameByIdAsync(user.Id);
             var userJSON = JsonSerializer.Serialize(userName, jsonOptions);
+            var userPatch = JsonSerializer.Serialize(await patchStorage.GetUserPatchReadAsync(user.Id), jsonOptions);
             claims.Add(new Claim("name", userJSON));
-            claims.Add(new Claim("username", await storage.GetUsernameAsync(user.Id)));
+            claims.Add(new Claim("username", await storage.GetUsernameAsync(user.Id) ?? ""));
+            claims.Add(new Claim("patch", userPatch));
 
             var payload = new JwtPayload(issuer, audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddDays(30));
 
@@ -155,6 +160,11 @@ namespace GymBackend.Service.Auth
         public async Task<List<User>> GetUsersAsync()
         {
             return await storage.GetUsersAsync();
+        }
+
+        public async Task<AuthUser?> GetAuthUser(string username)
+        {
+            return await storage.FindUserAsync(username) ?? null;
         }
     }
 }

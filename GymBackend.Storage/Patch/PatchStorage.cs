@@ -12,21 +12,21 @@ namespace GymBackend.Storage.Patch
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<bool> GetUserPatchReadAsync(Guid userId)
+        public async Task<float> GetUserPatchReadAsync(Guid userId)
         {
-            var sql = "SELECT [PatchRead] FROM [Users].[Users] WHERE [Id] = @userId";
+            var sql = "SELECT [Patch] FROM [Users].[Users] WHERE [Id] = @userId";
 
-            return await database.ExecuteQuerySingleAsync<bool>(sql, new { userId });
+            return await database.ExecuteQuerySingleAsync<float>(sql, new { userId });
         }
 
-        public async Task<bool> SetUserPatchReadAsync(Guid userId)
+        public async Task<float> SetUserPatchReadAsync(Guid userId, float patch)
         {
             var sql = @"
 UPDATE [Users].[Users]
-SET [PatchRead] = 1
+SET [Patch] = @patch
 WHERE [Id] = @userId";
 
-            await database.ExecuteAsync(sql, new { userId });
+            await database.ExecuteAsync(sql, new { userId, patch });
 
             return await GetUserPatchReadAsync(userId);
         }

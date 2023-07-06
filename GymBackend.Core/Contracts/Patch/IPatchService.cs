@@ -2,7 +2,7 @@
 {
     public interface IPatchService
     {
-        Task<bool> GetUserPatchReadAsync(Guid userId);
-        Task<bool> SetUserPatchReadAsync(Guid userId);
+        Task<float> GetUserPatchReadAsync(Guid userId);
+        Task<float> SetUserPatchReadAsync(Guid userId, string patch);
     }
 }

@@ -18,15 +18,15 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpGet("")]
-        public async Task<bool> GetUserPatchRead()
+        public async Task<float> GetUserPatchRead()
         {
             return await service.GetUserPatchReadAsync(authService.CurrentUserId());
         }
 
-        [HttpPost("")]
-        public async Task<bool> SetUserPatchRead()
+        [HttpPost("{patch}")]
+        public async Task<float> SetUserPatchRead(string patch)
         {
-            return await service.SetUserPatchReadAsync(authService.CurrentUserId());
+            return await service.SetUserPatchReadAsync(authService.CurrentUserId(), patch);
         }
     }
 }

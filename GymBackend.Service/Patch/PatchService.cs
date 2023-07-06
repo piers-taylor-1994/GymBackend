@@ -10,13 +10,13 @@ namespace GymBackend.Service.Patch
         {
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
-        public async Task<bool> GetUserPatchReadAsync(Guid userId)
+        public async Task<float> GetUserPatchReadAsync(Guid userId)
         {
             return await storage.GetUserPatchReadAsync(userId);
         }
-        public async Task<bool> SetUserPatchReadAsync(Guid userId)
+        public async Task<float> SetUserPatchReadAsync(Guid userId, string patch)
         {
-            return await storage.SetUserPatchReadAsync(userId);
+            return await storage.SetUserPatchReadAsync(userId, float.Parse(patch));
         }
     }
 }
