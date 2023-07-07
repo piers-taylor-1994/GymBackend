@@ -185,7 +185,8 @@ INNER JOIN Workouts.Exercises e on s.ExerciseId = e.Id
 INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
 INNER JOIN Users.Users u on r.UserId = u.Id
 WHERE e.Id = @exerciseId
-GROUP BY u.Username";
+GROUP BY u.Username
+ORDER BY Weight DESC";
 
             var maxSets = await database.ExecuteQueryAsync<MaxSet>(sql, new { exerciseId });
             return maxSets.ToList();
