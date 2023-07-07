@@ -14,5 +14,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId);
         Task<RoutineSet> GetRoutineHistoryAsync(string id);
         Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds);
+        Task<List<MaxSet>> GetExerciseLeaderboardAsync(string exerciseId);
     }
 }

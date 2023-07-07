@@ -18,5 +18,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<Routine>> GetRoutinesAsync(Guid userId);
         Task DeleteRoutineAsync(Guid userId, Guid routineId);
         Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId);
+        Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId);
     }
 }

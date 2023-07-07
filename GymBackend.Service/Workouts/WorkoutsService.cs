@@ -119,5 +119,10 @@ namespace GymBackend.Service.Workouts
 
             return setList;
         }
+
+        public async Task<List<MaxSet>> GetExerciseLeaderboardAsync(string exerciseId)
+        {
+            return await storage.GetExerciseLeaderboardAsync(Guid.Parse(exerciseId));
+        }
     }
 }

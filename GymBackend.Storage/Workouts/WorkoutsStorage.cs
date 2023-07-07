@@ -1,6 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
-using System.Runtime.InteropServices;
 using YOTApp.Storage;
 
 namespace GymBackend.Storage.Workouts
@@ -175,6 +174,21 @@ AND s.Reps IS NOT NULL
 ORDER BY r.Date desc";
 
             return await database.ExecuteQuerySingleAsync<Set>(sql, new { userId, exerciseId }) ?? null;
+        }
+
+        public async Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId)
+        {
+            var sql = @"
+SELECT TOP(10) u.Username, MAX(s.Weight) as Weight
+FROM Workouts.Sets s
+INNER JOIN Workouts.Exercises e on s.ExerciseId = e.Id
+INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
+INNER JOIN Users.Users u on r.UserId = u.Id
+WHERE e.Id = @exerciseId
+GROUP BY u.Username";
+
+            var maxSets = await database.ExecuteQueryAsync<MaxSet>(sql, new { exerciseId });
+            return maxSets.ToList();
         }
     }
 }
