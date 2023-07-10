@@ -114,7 +114,8 @@ UPDATE
 SET
     [Weight] = @Weight,
     [Sets] = @Sets,
-    [Reps] = @Reps
+    [Reps] = @Reps,
+    [Order] = @Order
 WHERE [Id] = @Id";
 
             await database.ExecuteAsync(updateSql, set);

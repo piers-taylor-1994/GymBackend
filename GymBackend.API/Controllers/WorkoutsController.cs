@@ -2,6 +2,7 @@
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace GymBackend.API.Controllers
 {
@@ -36,10 +37,16 @@ namespace GymBackend.API.Controllers
             return await service.GetRoutineAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
 
+        //[HttpPost("routine")]
+        //public async Task<RoutineSet> PostRoutine(List<string> exerciseIds)
+        //{
+        //    return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
+        //}
+
         [HttpPost("routine")]
-        public async Task<RoutineSet> PostRoutine(List<string> exerciseIds)
+        public async Task<RoutineSet> AddRoutine(List<NewSet> exercises)
         {
-            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), exercises).ConfigureAwait(false);
         }
 
         [HttpPut("routine/{id}")]
