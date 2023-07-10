@@ -1,5 +1,6 @@
 ﻿using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Workouts;
+using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -82,6 +83,14 @@ namespace GymBackend.API.Controllers
         public async Task<List<MaxSet>> GetExerciseLeaderboard(string exerciseId)
         {
             return await service.GetExerciseLeaderboardAsync(exerciseId).ConfigureAwait(false);
+        }
+
+        [HttpPost("export")]
+        public async Task<FileStreamResult> Test()
+        {
+            var stream = await service.DataExport();
+
+            return File(stream, "Application/pdf", "dataexport.pdf");
         }
     }
 }

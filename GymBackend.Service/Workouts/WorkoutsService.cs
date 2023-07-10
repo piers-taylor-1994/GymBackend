@@ -1,5 +1,11 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Tagging;
+using iText.Layout.Borders;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace GymBackend.Service.Workouts
 {
@@ -43,7 +49,7 @@ namespace GymBackend.Service.Workouts
 
             foreach (var set in setList)
             {
-                if (!exerciseIds.Any(e => Guid.Parse(e) == set.ExerciseId)) 
+                if (!exerciseIds.Any(e => Guid.Parse(e) == set.ExerciseId))
                 {
                     setList = await storage.DeleteSetFromRoutineAsync(routine.Id, set.Id);
                 }
@@ -123,6 +129,37 @@ namespace GymBackend.Service.Workouts
         public async Task<List<MaxSet>> GetExerciseLeaderboardAsync(string exerciseId)
         {
             return await storage.GetExerciseLeaderboardAsync(Guid.Parse(exerciseId));
+        }
+
+        public async Task<MemoryStream> DataExport()
+        {
+            MemoryStream stream = new();
+            PdfWriter pdfWriter = new(stream);
+            PdfDocument pdf = new(pdfWriter);
+            iText.Layout.Document document = new(pdf);
+            pdfWriter.SetCloseStream(false);
+
+            Table frontPageTable = new(1);
+            frontPageTable.SetHorizontalAlignment(HorizontalAlignment.CENTER);
+            var height = document.GetPdfDocument().GetDefaultPageSize().GetHeight();
+            frontPageTable.SetMarginTop(height / 4);
+
+            Cell frontCell = new();
+            frontCell.SetBorder(Border.NO_BORDER);
+            Paragraph frontPageTitle = new("Test");
+            frontPageTitle.SetFontColor(new DeviceRgb(8, 73, 117)).SetFontSize(20f).GetAccessibilityProperties().SetRole(StandardRoles.H1);
+            frontPageTitle.SetTextAlignment(TextAlignment.CENTER);
+            frontCell.Add(frontPageTitle);
+            frontPageTable.AddCell(frontCell);
+
+            document.Add(frontPageTable);
+
+            document.Close();
+
+            stream.Flush();
+            stream.Position = 0;
+
+            return stream;
         }
     }
 }
