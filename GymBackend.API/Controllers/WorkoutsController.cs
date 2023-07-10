@@ -37,35 +37,12 @@ namespace GymBackend.API.Controllers
             return await service.GetRoutineAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
 
-        //[HttpPost("routine")]
-        //public async Task<RoutineSet> PostRoutine(List<string> exerciseIds)
-        //{
-        //    return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
-        //}
-
         [HttpPost("routine")]
-        public async Task<RoutineSet> AddRoutine(List<NewSet> exercises)
+        public async Task<RoutineSet> AddRoutine(List<ExerciseSet> sets)
         {
-            return await service.AddRoutineAsync(authService.CurrentUserId(), exercises).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), sets).ConfigureAwait(false);
         }
 
-        [HttpPut("routine/{id}")]
-        public async Task<RoutineSet> UpdateRoutine(string id, List<SetUpdate> setList)
-        {
-            return await service.UpdateRoutineAsync(id, setList).ConfigureAwait(false);
-        }
-
-        [HttpDelete("routine/set/{id}")]
-        public async Task RemoveSetFromRoutine(string id)
-        {
-            await service.DeleteSetFromRoutineAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
-        }
-
-        [HttpPut("routine/set/order")]
-        public async Task<Dictionary<Guid, int>> UpdateSetOrder([FromBody]Dictionary<Guid, int> setDict)
-        {
-            return await service.UpdateSetOrderAsync(setDict).ConfigureAwait(false);
-        }
 
         [HttpGet("routine/history")]
         public async Task<List<Routine>> GetRoutinesHistory()
