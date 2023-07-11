@@ -33,66 +33,29 @@ namespace GymBackend.Service.Workouts
             return new RoutineSet(routine.Id, setsList);
         }
 
-        public async Task<RoutineSet> AddRoutineAsync(Guid userId, List<string> exerciseIds)
+        public async Task<RoutineSet> AddRoutineAsync(Guid userId, List<ExerciseSet> sets)
         {
-            if (exerciseIds.Count == 0) throw new Exception("No exercises to add");
+            if (sets.Count == 0) throw new Exception("No exercises to add");
 
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date);
 
-            var setList = await storage.GetSetsByRoutineIdAsync(routine.Id);
-
-            foreach (var set in setList)
+            if (routine == null)
             {
-                if (!exerciseIds.Any(e => Guid.Parse(e) == set.ExerciseId)) 
-                {
-                    setList = await storage.DeleteSetFromRoutineAsync(routine.Id, set.Id);
-                }
+                routine = await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
+            }
+            else
+            {
+                await storage.DeleteSetsFromRoutineAsync(routine.Id);
             }
 
-            foreach (var id in exerciseIds)
-            {
-                if (!setList.Any(s => s.ExerciseId == Guid.Parse(id))) setList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, Guid.Parse(id), setList.Count);
-            }
+            var setList = new List<Set>();
 
-            if (setList.Count == 0) throw new Exception("Error adding exercises to routine");
+            foreach (var set in sets)
+            {
+                setList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, set);
+            }
 
             return new RoutineSet(routine.Id, setList);
-        }
-
-        public async Task<RoutineSet> UpdateRoutineAsync(string id, List<SetUpdate> setList)
-        {
-            if (setList.Count == 0) throw new Exception("No sets to update");
-            var routine = await storage.GetRoutineAsync(Guid.Parse(id)) ?? throw new Exception("Routine can't be found");
-
-            var updatedSetList = new List<Set>();
-
-            foreach (var exercise in setList)
-            {
-                updatedSetList = await storage.UpdateSetsForRoutineAsync(routine.Id, exercise);
-            }
-
-            return new RoutineSet(routine.Id, updatedSetList);
-        }
-
-        public async Task DeleteSetFromRoutineAsync(Guid userId, string id)
-        {
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date) ?? throw new Exception("Cannot find routine");
-            await storage.DeleteSetFromRoutineAsync(routine.Id, Guid.Parse(id));
-
-            var sets = await storage.GetSetsByRoutineIdAsync(routine.Id);
-            if (sets.Count == 0) await storage.DeleteRoutineAsync(userId, routine.Id);
-        }
-
-        public async Task<Dictionary<Guid, int>> UpdateSetOrderAsync(Dictionary<Guid, int> setOrder)
-        {
-            try
-            {
-                return await storage.UpdateSetOrderAsync(setOrder);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot update set order", ex);
-            }
         }
 
         public Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)
