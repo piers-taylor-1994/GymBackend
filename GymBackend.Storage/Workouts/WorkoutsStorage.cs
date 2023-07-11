@@ -101,9 +101,6 @@ SELECT DISTINCT [r].*
 FROM [Workouts].[Routine] r
 INNER JOIN [Workouts].[Sets] s ON [r].[Id] = [s].[RoutineId] 
 WHERE [UserId] = @userId
-AND [s].[Weight] IS NOT NULL 
-AND [s].[Sets] IS NOT NULL 
-AND [s].[Reps] IS NOT NULL 
 ORDER BY [Date] DESC";
 
             var routines = await database.ExecuteQueryAsync<Routine>(sql, new { userId });
@@ -119,9 +116,6 @@ FROM Workouts.Sets s
 INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
 WHERE s.ExerciseId = @exerciseId
 AND r.UserId = @userId
-AND s.Weight IS NOT NULL
-AND s.Sets IS NOT NULL
-AND s.Reps IS NOT NULL
 ORDER BY r.Date desc";
 
             return await database.ExecuteQuerySingleAsync<Set>(sql, new { userId, exerciseId }) ?? null;
