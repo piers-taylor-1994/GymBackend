@@ -87,5 +87,31 @@ namespace GymBackend.Service.Workouts
         {
             return await storage.GetExerciseLeaderboardAsync(Guid.Parse(exerciseId));
         }
+
+        public async Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId)
+        {
+            return await storage.GetRoutineTemplatesAsync(userId);
+        }
+
+        public async Task<List<Exercise>> GetRoutineTemplateSetsAsync(Guid userId, string id)
+        {
+            return await storage.GetRoutineTemplateSetsAsync(userId, Guid.Parse(id));
+        }
+
+        public async Task<RoutineTemplate> AddRoutineTemplateAsync(Guid userId, string name, List<string> exerciseIds)
+        {
+            var routineTemplate = await storage.GetRoutineTemplateAsync(userId, name);
+
+            if (routineTemplate != null) throw new Exception("Routine name already exists");
+
+            routineTemplate = await storage.AddRoutineTemplateAsync(Guid.NewGuid(), userId, name);
+
+            foreach (var exerciseId in exerciseIds)
+            {
+                await storage.AddRoutineTemplateSetAsync(Guid.NewGuid(), routineTemplate.Id, Guid.Parse(exerciseId));
+            }
+
+            return await storage.GetRoutineTemplateAsync(userId, routineTemplate.Id);
+        }
     }
 }

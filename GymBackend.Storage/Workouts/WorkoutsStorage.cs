@@ -136,5 +136,70 @@ ORDER BY Weight DESC";
             var maxSets = await database.ExecuteQueryAsync<MaxSet>(sql, new { exerciseId });
             return maxSets.ToList();
         }
+
+        public async Task<RoutineTemplate?> GetRoutineTemplateAsync(Guid userId, string name)
+        {
+            var sql = "SELECT * FROM [Workouts].[RoutineTemplate] WHERE [UserId] = @userId AND [Name] = @name";
+
+            return await database.ExecuteQuerySingleAsync<RoutineTemplate?>(sql, new { userId, name });
+        }
+
+        public async Task<RoutineTemplate> GetRoutineTemplateAsync(Guid userId, Guid id)
+        {
+            var sql = "SELECT * FROM [Workouts].[RoutineTemplate] WHERE [UserId] = @userId AND [Id] = @id";
+
+            return await database.ExecuteQuerySingleAsync<RoutineTemplate>(sql, new { userId, id }) ?? throw new Exception("Cannot find routine template");
+        }
+
+        public async Task<RoutineTemplate> AddRoutineTemplateAsync(Guid id, Guid userId, string name)
+        {
+            var sql = @"
+INSERT INTO [Workouts].[RoutineTemplate] ([Id], [UserId], [Name])
+VALUES (
+    @id,
+    @userId,
+    @name
+)";
+
+            await database.ExecuteAsync(sql, new { id, userId, name });
+            return await GetRoutineTemplateAsync(userId, id);
+        }
+
+        public async Task AddRoutineTemplateSetAsync(Guid id, Guid userId, Guid exerciseId)
+        {
+            var sql = @"
+INSERT INTO [Workouts].[RoutineTemplateSets] ([Id], [RoutineTemplateId], [ExerciseId])
+VALUES (
+    @id,
+    @userId,
+    @exerciseId
+)";
+
+            await database.ExecuteAsync(sql, new { id, userId, exerciseId });
+        }
+
+        public async Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId)
+        {
+            var sql = "SELECT * FROM [Workouts].[RoutineTemplate] WHERE [UserId] = @userId";
+
+            var routines = await database.ExecuteQueryAsync<RoutineTemplate>(sql, new { userId });
+
+            return routines.ToList();
+        }
+
+        public async Task<List<Exercise>> GetRoutineTemplateSetsAsync(Guid userId, Guid id)
+        {
+            var sql = @"
+SELECT e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, [e].*
+FROM [Workouts].[RoutineTemplateSets] s
+INNER JOIN [Workouts].[RoutineTemplate] r on s.RoutineTemplateId = r.Id
+INNER JOIN [Workouts].[Exercises] e on s.ExerciseId = e.Id
+WHERE r.Id = @id
+AND r.UserId = @userId";
+
+            var sets = await database.ExecuteQueryAsync<Exercise>(sql, new { userId, id });
+
+            return sets.ToList();
+        }
     }
 }

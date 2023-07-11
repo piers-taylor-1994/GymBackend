@@ -1,4 +1,5 @@
-﻿using GymBackend.Core.Contracts;
+﻿using GymBackend.API.Models;
+using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,24 @@ namespace GymBackend.API.Controllers
         public async Task<List<MaxSet>> GetExerciseLeaderboard(string exerciseId)
         {
             return await service.GetExerciseLeaderboardAsync(exerciseId).ConfigureAwait(false);
+        }
+
+        [HttpPost("routine/template")]
+        public async Task<RoutineTemplate> AddRoutineTemplate([FromBody]AddRoutineTemplate routineTemplate)
+        {
+            return await service.AddRoutineTemplateAsync(authService.CurrentUserId(), routineTemplate.Name, routineTemplate.ExerciseIds).ConfigureAwait(false);
+        }
+
+        [HttpGet("routine/templates")]
+        public async Task<List<RoutineTemplate>> GetRoutineTemplates()
+        {
+            return await service.GetRoutineTemplatesAsync(authService.CurrentUserId()).ConfigureAwait(false);
+        }
+
+        [HttpGet("routine/template/{id}")]
+        public async Task<List<Exercise>> GetRoutineTemplateSets(string id)
+        {
+            return await service.GetRoutineTemplateSetsAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
         }
     }
 }

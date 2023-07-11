@@ -1,4 +1,5 @@
-﻿using GymBackend.Core.Domains.Workouts;
+﻿using GymBackend.Core.Domains.User;
+using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Core.Contracts.Workouts
 {
@@ -14,5 +15,11 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<Routine>> GetRoutinesAsync(Guid userId);
         Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId);
         Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId);
+        Task<RoutineTemplate?> GetRoutineTemplateAsync(Guid userId, string name);
+        Task<RoutineTemplate> GetRoutineTemplateAsync(Guid userId, Guid id);
+        Task<RoutineTemplate> AddRoutineTemplateAsync(Guid id, Guid userId, string name);
+        Task AddRoutineTemplateSetAsync(Guid id, Guid routineTemplateId, Guid exerciseId);
+        Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId);
+        Task<List<Exercise>> GetRoutineTemplateSetsAsync(Guid userId, Guid id);
     }
 }
