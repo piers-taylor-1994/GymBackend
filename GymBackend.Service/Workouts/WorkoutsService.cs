@@ -108,7 +108,7 @@ namespace GymBackend.Service.Workouts
 
             foreach (var exerciseId in exerciseIds)
             {
-                await storage.AddRoutineTemplateSetAsync(Guid.NewGuid(), routineTemplate.Id, Guid.Parse(exerciseId));
+                await storage.AddRoutineTemplateSetAsync(routineTemplate.Id, Guid.Parse(exerciseId));
             }
 
             return await storage.GetRoutineTemplateAsync(userId, routineTemplate.Id);

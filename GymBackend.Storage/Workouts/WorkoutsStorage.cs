@@ -165,17 +165,16 @@ VALUES (
             return await GetRoutineTemplateAsync(userId, id);
         }
 
-        public async Task AddRoutineTemplateSetAsync(Guid id, Guid userId, Guid exerciseId)
+        public async Task AddRoutineTemplateSetAsync(Guid userId, Guid exerciseId)
         {
             var sql = @"
-INSERT INTO [Workouts].[RoutineTemplateSets] ([Id], [RoutineTemplateId], [ExerciseId])
+INSERT INTO [Workouts].[RoutineTemplateSets] ([RoutineTemplateId], [ExerciseId])
 VALUES (
-    @id,
     @userId,
     @exerciseId
 )";
 
-            await database.ExecuteAsync(sql, new { id, userId, exerciseId });
+            await database.ExecuteAsync(sql, new { userId, exerciseId });
         }
 
         public async Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId)
@@ -195,7 +194,8 @@ FROM [Workouts].[RoutineTemplateSets] s
 INNER JOIN [Workouts].[RoutineTemplate] r on s.RoutineTemplateId = r.Id
 INNER JOIN [Workouts].[Exercises] e on s.ExerciseId = e.Id
 WHERE r.Id = @id
-AND r.UserId = @userId";
+AND r.UserId = @userId
+ORDER BY s.[Id]";
 
             var sets = await database.ExecuteQueryAsync<Exercise>(sql, new { userId, id });
 
