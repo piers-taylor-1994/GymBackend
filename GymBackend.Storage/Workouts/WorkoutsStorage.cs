@@ -52,6 +52,19 @@ ORDER BY s.[Order]";
             return sets.ToList();
         }
 
+        // Beginnings of making history coloured and labelled by muscle
+        // Probs need to remove foreign key in [Exercises] as it is reference MuscleGroups (biceps etc) and this is reference MuscleAreas (upper/lower)
+//        public async Task<int> GetMostCommonMuscleGroupFromSetsAsync()
+//        {
+//            var sql = @"
+//SELECT TOP 1 e.[MuscleGroupId]
+//FROM [Workouts].[Sets] s
+//INNER JOIN [Workouts].[Exercises] e on s.[ExerciseId] = e.[Id]
+//WHERE RoutineId = 'F5F26AF7-DE2F-42C1-8EDA-4ABDEEF5CD4E'
+//GROUP BY e.[MuscleGroupId]
+//ORDER BY COUNT(*) DESC";
+//        }
+
         public async Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date)
         {
             var sqlCreate = @"
