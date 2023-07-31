@@ -219,7 +219,8 @@ ORDER BY s.[Id]";
             var sql = @"
 SELECT COUNT(*)
 FROM [Workouts].[Routine]
-WHERE Date BETWEEN @from AND @to";
+WHERE UserId = @userId
+AND Date BETWEEN @from AND @to";
 
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, from, to });
         }
@@ -230,7 +231,8 @@ WHERE Date BETWEEN @from AND @to";
             var sql = @"
 SELECT COUNT(*)
 FROM [Workouts].[Routine]
-WHERE Date LIKE @month";
+WHERE UserId = @userId
+AND Date LIKE @month";
 
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, month });
         }
