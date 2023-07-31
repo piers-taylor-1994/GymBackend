@@ -219,7 +219,8 @@ ORDER BY s.[Id]";
 SELECT COUNT(*)
 FROM [Workouts].[Routine]
 WHERE UserId = @userId
-AND Date BETWEEN @from AND @to";
+AND Date <= @from 
+AND Date >= @to";
 
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, from, to });
         }
