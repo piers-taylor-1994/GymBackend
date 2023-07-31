@@ -26,7 +26,6 @@ namespace GymBackend.Storage.Workouts
 SELECT e.[Id]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[ExerciseMuscles] em on e.Id = em.ExerciseId
-INNER JOIN [Workouts].[MuscleGroups] m on em.MuscleId = m.Id
 WHERE em.MuscleId = @muscle";
             var exercises = await database.ExecuteQueryAsync<Guid>(sql, new { muscle });
             return exercises.ToList();
@@ -200,6 +199,27 @@ ORDER BY s.[Id]";
             var sets = await database.ExecuteQueryAsync<Exercise>(sql, new { userId, id });
 
             return sets.ToList();
+        }
+
+        public async Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime from, DateTime to)
+        {
+            var sql = @"
+SELECT COUNT(*)
+FROM [Workouts].[Routine]
+WHERE Date BETWEEN @from AND @to";
+
+            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, from, to });
+        }
+
+        public async Task<int> GetMonthsWorkoutsCountAsync(Guid userId, string month)
+        {
+            month = "%" + month + "%";
+            var sql = @"
+SELECT COUNT(*)
+FROM [Workouts].[Routine]
+WHERE Date LIKE @month";
+
+            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, month });
         }
     }
 }

@@ -113,5 +113,22 @@ namespace GymBackend.Service.Workouts
 
             return await storage.GetRoutineTemplateAsync(userId, routineTemplate.Id);
         }
+
+        public async Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId)
+        {
+            DateTime originalDate = DateTime.Now;
+            int i = 0;
+            while (originalDate.DayOfWeek != DayOfWeek.Monday)
+            {
+                originalDate = originalDate.AddDays(-1);
+                i++;
+            };
+
+            var thisWeeksCount = await storage.GetWeeksWorkoutsCountAsync(userId, DateTime.Now.Date, DateTime.Now.AddDays(-i).Date);
+            var lastWeeksCount = await storage.GetWeeksWorkoutsCountAsync(userId, DateTime.Now.Date.AddDays(-(i + 1)), DateTime.Now.Date.AddDays(-(i + 7)));
+            var thisMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, originalDate.Year + "-" + originalDate.Date.ToString().Substring(3, 2));
+            var lastMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, originalDate.AddMonths(-1).Year + "-" + originalDate.AddMonths(-1).Date.ToString().Substring(3, 2));
+            return new WorkoutsCount(thisWeeksCount, lastWeeksCount, thisMonthsCount, lastMonthsCount);
+        }
     }
 }

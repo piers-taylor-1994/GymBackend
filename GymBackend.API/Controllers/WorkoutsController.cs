@@ -86,5 +86,11 @@ namespace GymBackend.API.Controllers
         {
             return await service.GetRoutineTemplateSetsAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
         }
+
+        [HttpGet("count")]
+        public async Task<WorkoutsCount> GetWorkoutsCount()
+        {
+            return await service.GetWorkoutsCountAsync(authService.CurrentUserId()).ConfigureAwait(false);
+        }
     }
 }

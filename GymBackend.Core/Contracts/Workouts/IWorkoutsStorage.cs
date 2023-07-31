@@ -21,5 +21,7 @@ namespace GymBackend.Core.Contracts.Workouts
         Task AddRoutineTemplateSetAsync(Guid routineTemplateId, Guid exerciseId);
         Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId);
         Task<List<Exercise>> GetRoutineTemplateSetsAsync(Guid userId, Guid id);
+        Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime from, DateTime to);
+        Task<int> GetMonthsWorkoutsCountAsync(Guid userId, string month);
     }
 }
