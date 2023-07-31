@@ -111,7 +111,6 @@ VALUES (
             var sql = @"
 SELECT DISTINCT [r].* 
 FROM [Workouts].[Routine] r
-INNER JOIN [Workouts].[Sets] s ON [r].[Id] = [s].[RoutineId] 
 WHERE [UserId] = @userId
 ORDER BY [Date] DESC";
 
@@ -225,16 +224,16 @@ AND Date BETWEEN @from AND @to";
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, from, to });
         }
 
-        public async Task<int> GetMonthsWorkoutsCountAsync(Guid userId, string month)
+        public async Task<int> GetMonthsWorkoutsCountAsync(Guid userId, DateTime yearMonth)
         {
-            month = "%" + month + "%";
             var sql = @"
 SELECT COUNT(*)
 FROM [Workouts].[Routine]
 WHERE UserId = @userId
-AND Date LIKE @month";
+AND Date >= @yearMonth
+AND Date < DATEADD(month, 1, @yearMonth)";
 
-            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, month });
+            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, yearMonth });
         }
     }
 }
