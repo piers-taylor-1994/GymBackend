@@ -80,7 +80,7 @@ VALUES (
             return routine ?? throw new Exception("Create routine failed");
         }
 
-        public async Task<List<Set>> AddExercisesAsync(Guid id, Guid routineId, ExerciseSet set)
+        public async Task<List<Set>> AddExercisesToSetAsync(Guid id, Guid routineId, ExerciseSet set)
         {
             var sqlCreate = @"
 INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Weight], [Sets], [Reps], [Order])
@@ -235,6 +235,38 @@ AND Date >= @yearMonth
 AND Date < DATEADD(month, 1, @yearMonth)";
 
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, yearMonth });
+        }
+
+        public async Task<Exercise> AddExerciseAsync(Exercise exercise)
+        {
+            var sqlCreate = @"
+INSERT INTO [Workouts].[Exercises] ([Id], [MuscleGroupId], [Name], [Description])
+VALUES (
+    @ExerciseId,
+    @MuscleGroup,
+    @Name,
+    @Description
+)";
+            await database.ExecuteAsync(sqlCreate, exercise);
+
+            var sqlGet = "SELECT Id AS ExerciseId, MuscleGroupId, Name, Description FROM [Workouts].[Exercises] WHERE [Id] = @ExerciseId";
+
+            return await database.ExecuteQuerySingleAsync<Exercise>(sqlGet, exercise) ?? throw new Exception("Create exercise failed");
+        }
+
+        public async Task<ExerciseMuscle> AddExerciseMuscleAsync(Guid exerciseId, MuscleGroup muscle)
+        {
+            var sqlCreate = @"
+INSERT INTO [Workouts].[ExerciseMuscles] ([ExerciseId], [MuscleId])
+VALUES (
+    @exerciseId,
+    @muscle
+)";
+            await database.ExecuteAsync(sqlCreate, new { exerciseId, muscle });
+
+            var sqlGet = "SELECT * FROM [Workouts].[ExerciseMuscles] WHERE [ExerciseId] = @exerciseId AND [MuscleId] = @muscle";
+
+            return await database.ExecuteQuerySingleAsync<ExerciseMuscle>(sqlGet, new { exerciseId, muscle }) ?? throw new Exception("Create exercise muscle failed");
         }
     }
 }

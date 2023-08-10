@@ -92,5 +92,11 @@ namespace GymBackend.API.Controllers
         {
             return await service.GetWorkoutsCountAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
+
+        [HttpPost("add")]
+        public async Task<Exercise> AddExercise(string name, List<MuscleGroup> muscles)
+        {
+            return await service.AddExerciseAsync(name, muscles).ConfigureAwait(false);
+        }
     }
 }

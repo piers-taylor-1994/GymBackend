@@ -1,4 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
+using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Service.Workouts
@@ -52,7 +53,7 @@ namespace GymBackend.Service.Workouts
 
             foreach (var set in sets)
             {
-                setList = await storage.AddExercisesAsync(Guid.NewGuid(), routine.Id, set);
+                setList = await storage.AddExercisesToSetAsync(Guid.NewGuid(), routine.Id, set);
             }
 
             return new RoutineSet(routine.Id, setList);
@@ -129,6 +130,16 @@ namespace GymBackend.Service.Workouts
             var thisMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(2023, DateTime.Now.Month, 01));
             var lastMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(2023, DateTime.Now.Month, 01).AddMonths(-1));
             return new WorkoutsCount(thisWeeksCount, lastWeeksCount, thisMonthsCount, lastMonthsCount);
+        }
+
+        public async Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles)
+        {
+            Guid exerciseId = Guid.NewGuid();
+
+            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleGroup = 0, Name = name, Description = "Do " + name });
+            foreach (var muscle in muscles) { await storage.AddExerciseMuscleAsync(exerciseId, muscle); }
+
+            return exercise;
         }
     }
 }
