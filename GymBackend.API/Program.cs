@@ -11,8 +11,6 @@ using GymBackend.Storage.Patch;
 using GymBackend.Storage.Workouts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using YOTApp.Storage;
 
 var origins = "AllowSpecificOrigins";

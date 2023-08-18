@@ -15,7 +15,7 @@ namespace GymBackend.Storage.Workouts
 
         public async Task<List<Exercise>> GetAllExercisesAsync()
         {
-            var sql = "SELECT *, [Id] as ExerciseId, [MuscleGroupId] as MuscleGroup FROM [Workouts].[Exercises]";
+            var sql = "SELECT *, [Id] as ExerciseId, [MuscleArea] FROM [Workouts].[Exercises]";
             var exercises = await database.ExecuteQueryAsync<Exercise>(sql);
             return exercises.ToList();
         }
@@ -41,7 +41,7 @@ WHERE em.MuscleId = @muscle";
         public async Task<List<Set>> GetSetsByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
-SELECT s.[Id], e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, e.[Name], e.[Description], s.[Weight], s.[Sets], s.[Reps], s.[Order]
+SELECT s.[Id], e.[Id] as ExerciseId, MuscleArea, e.[Name], s.[Weight], s.[Sets], s.[Reps], s.[Order]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]
@@ -53,16 +53,16 @@ ORDER BY s.[Order]";
 
         // Beginnings of making history coloured and labelled by muscle
         // Probs need to remove foreign key in [Exercises] as it is reference MuscleGroups (biceps etc) and this is reference MuscleAreas (upper/lower)
-//        public async Task<int> GetMostCommonMuscleGroupFromSetsAsync()
-//        {
-//            var sql = @"
-//SELECT TOP 1 e.[MuscleGroupId]
-//FROM [Workouts].[Sets] s
-//INNER JOIN [Workouts].[Exercises] e on s.[ExerciseId] = e.[Id]
-//WHERE RoutineId = 'F5F26AF7-DE2F-42C1-8EDA-4ABDEEF5CD4E'
-//GROUP BY e.[MuscleGroupId]
-//ORDER BY COUNT(*) DESC";
-//        }
+        //        public async Task<int> GetMostCommonMuscleGroupFromSetsAsync()
+        //        {
+        //            var sql = @"
+        //SELECT TOP 1 e.[MuscleArea]
+        //FROM [Workouts].[Sets] s
+        //INNER JOIN [Workouts].[Exercises] e on s.[ExerciseId] = e.[Id]
+        //WHERE RoutineId = 'F5F26AF7-DE2F-42C1-8EDA-4ABDEEF5CD4E'
+        //GROUP BY e.[MuscleArea]
+        //ORDER BY COUNT(*) DESC";
+        //        }
 
         public async Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date)
         {
@@ -200,7 +200,7 @@ VALUES (
         public async Task<List<Exercise>> GetRoutineTemplateSetsAsync(Guid userId, Guid id)
         {
             var sql = @"
-SELECT e.[Id] as ExerciseId, e.[MuscleGroupId] as MuscleGroup, [e].*
+SELECT e.[Id] as ExerciseId, e.[MuscleArea] as MuscleGroup, [e].*
 FROM [Workouts].[RoutineTemplateSets] s
 INNER JOIN [Workouts].[RoutineTemplate] r on s.RoutineTemplateId = r.Id
 INNER JOIN [Workouts].[Exercises] e on s.ExerciseId = e.Id
@@ -240,16 +240,15 @@ AND Date < DATEADD(month, 1, @yearMonth)";
         public async Task<Exercise> AddExerciseAsync(Exercise exercise)
         {
             var sqlCreate = @"
-INSERT INTO [Workouts].[Exercises] ([Id], [MuscleGroupId], [Name], [Description])
+INSERT INTO [Workouts].[Exercises] ([Id], [MuscleArea], [Name])
 VALUES (
     @ExerciseId,
-    @MuscleGroup,
-    @Name,
-    @Description
+    @MuscleArea,
+    @Name
 )";
             await database.ExecuteAsync(sqlCreate, exercise);
 
-            var sqlGet = "SELECT Id AS ExerciseId, MuscleGroupId, Name, Description FROM [Workouts].[Exercises] WHERE [Id] = @ExerciseId";
+            var sqlGet = "SELECT Id AS ExerciseId, MuscleArea, Name FROM [Workouts].[Exercises] WHERE [Id] = @ExerciseId";
 
             return await database.ExecuteQuerySingleAsync<Exercise>(sqlGet, exercise) ?? throw new Exception("Create exercise failed");
         }

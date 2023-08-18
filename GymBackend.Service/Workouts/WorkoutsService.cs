@@ -136,7 +136,15 @@ namespace GymBackend.Service.Workouts
         {
             Guid exerciseId = Guid.NewGuid();
 
-            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleGroup = 0, Name = name, Description = "Do " + name });
+            Dictionary<MuscleArea, int> muscleAreaCount = new()
+            {
+                { MuscleArea.Upper, muscles.Where(m => (int)m <= 5).Count() },
+                { MuscleArea.Core, muscles.Where(m => (int)m == 6).Count() },
+                { MuscleArea.Lower, muscles.Where(m => (int)m > 6).Count() },
+
+            };
+
+            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleArea = muscleAreaCount.MaxBy(t => t.Value).Key, Name = name });
             foreach (var muscle in muscles) { await storage.AddExerciseMuscleAsync(exerciseId, muscle); }
 
             return exercise;
