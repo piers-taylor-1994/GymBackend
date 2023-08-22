@@ -46,7 +46,7 @@ namespace GymBackend.API.Controllers
 
 
         [HttpGet("routine/history")]
-        public async Task<List<Routine>> GetRoutinesHistory()
+        public async Task<List<RoutineMuscleArea>> GetRoutinesHistory()
         {
             return await service.GetRoutinesHistoryAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }

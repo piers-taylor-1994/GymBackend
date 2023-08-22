@@ -59,9 +59,21 @@ namespace GymBackend.Service.Workouts
             return new RoutineSet(routine.Id, setList);
         }
 
-        public Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)
+        public async Task<List<RoutineMuscleArea>> GetRoutinesHistoryAsync(Guid userId)
         {
-            return storage.GetRoutinesAsync(userId);
+            
+            var routines = await storage.GetRoutinesAsync(userId);
+
+            List<RoutineMuscleArea> routineMuscleAreas = new();
+
+            foreach (var routine in routines)
+            {
+                var muscleArea = await storage.GetRoutineMuscleAreas(routine.Id);
+
+                routineMuscleAreas.Add(new RoutineMuscleArea { Id = routine.Id, Date = routine.Date, MuscleArea = muscleArea });
+            }
+
+            return routineMuscleAreas;
         }
 
         public async Task<RoutineSet> GetRoutineHistoryAsync(string id)

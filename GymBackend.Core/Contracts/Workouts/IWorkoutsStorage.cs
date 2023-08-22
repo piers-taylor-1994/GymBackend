@@ -13,6 +13,7 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<Set>> AddExercisesToSetAsync(Guid id, Guid routineId, ExerciseSet set);
         Task DeleteSetsFromRoutineAsync(Guid routineId);
         Task<List<Routine>> GetRoutinesAsync(Guid userId);
+        Task<MuscleArea> GetRoutineMuscleAreas(Guid routineId);
         Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId);
         Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId);
         Task<RoutineTemplate?> GetRoutineTemplateAsync(Guid userId, string name);
