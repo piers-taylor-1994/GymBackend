@@ -3,12 +3,12 @@
     public class RoutineSet
     {
         public Guid Id { get; set; }
-        public List<Set> SetList { get; set; }
+        public List<ExerciseSets> ExerciseSets { get; set; }
 
-        public RoutineSet(Guid id, List<Set> setList)
+        public RoutineSet(Guid id, List<ExerciseSets> exerciseSets)
         {
             Id = id;
-            SetList = setList;
+            ExerciseSets = exerciseSets;
         }
     }
 }

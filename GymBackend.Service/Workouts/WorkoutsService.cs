@@ -1,6 +1,7 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
+using System.Dynamic;
 
 namespace GymBackend.Service.Workouts
 {
@@ -29,14 +30,24 @@ namespace GymBackend.Service.Workouts
 
             if (routine == null) return null;
 
-            var setsList = await storage.GetSetsByRoutineIdAsync(routine.Id);
+            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(routine.Id);
 
-            return new RoutineSet(routine.Id, setsList);
+            var list = new List<ExerciseSets>();
+
+            foreach (var setOrder in exerciseOrdersList)
+            {
+                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+
+                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
+            }
+
+            return new RoutineSet(routine.Id, list);
+
         }
 
-        public async Task<RoutineSet> AddRoutineAsync(Guid userId, List<ExerciseSet> sets)
+        public async Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets)
         {
-            if (sets.Count == 0) throw new Exception("No exercises to add");
+            if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
 
             var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date);
 
@@ -46,17 +57,28 @@ namespace GymBackend.Service.Workouts
             }
             else
             {
-                await storage.DeleteSetsFromRoutineAsync(routine.Id);
+                var setIdList = await storage.GetSetIdsFromRoutineId(routine.Id);
+
+                foreach (var setId in setIdList)
+                {
+                    await storage.DeleteSetArrayFromRoutineIdAsync(setId);
+                }
+
+                await storage.DeleteSetsFromRoutineIdAsync(routine.Id);
             }
 
-            var setList = new List<Set>();
-
-            foreach (var set in sets)
+            foreach (var exercise in exerciseSets)
             {
-                setList = await storage.AddExercisesToSetAsync(Guid.NewGuid(), routine.Id, set);
+                var setId = Guid.NewGuid();
+                await storage.AddExercisesToSetAsync(setId, routine.Id, exercise.ExerciseId, exercise.Order);
+
+                foreach (var set in exercise.ExerciseArray)
+                {
+                    await storage.AddExerciseSetFromArrayAsync(setId, set.Weight, set.Sets, set.Reps, set.Order);
+                }
             }
 
-            return new RoutineSet(routine.Id, setList);
+            return routine.Id;
         }
 
         public async Task<List<RoutineMuscleArea>> GetRoutinesHistoryAsync(Guid userId)
@@ -78,9 +100,18 @@ namespace GymBackend.Service.Workouts
 
         public async Task<RoutineSet> GetRoutineHistoryAsync(string id)
         {
-            var setsList = await storage.GetSetsByRoutineIdAsync(Guid.Parse(id));
+            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(Guid.Parse(id));
 
-            return new RoutineSet(Guid.Parse(id), setsList);
+            var list = new List<ExerciseSets>();
+
+            foreach (var setOrder in exerciseOrdersList)
+            {
+                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+
+                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
+            }
+
+            return new RoutineSet(Guid.Parse(id), list);
         }
 
         public async Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds)
