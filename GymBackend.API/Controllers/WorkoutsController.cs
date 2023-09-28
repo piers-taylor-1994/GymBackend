@@ -39,9 +39,9 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("routine")]
-        public async Task<RoutineSet> AddRoutine(List<ExerciseSet> sets)
+        public async Task<Guid> AddRoutine(List<ExerciseSets> exerciseSets)
         {
-            return await service.AddRoutineAsync(authService.CurrentUserId(), sets).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseSets).ConfigureAwait(false);
         }
 
 

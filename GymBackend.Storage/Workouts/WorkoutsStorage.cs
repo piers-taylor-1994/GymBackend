@@ -38,16 +38,29 @@ WHERE em.MuscleId = @muscle";
             return await database.ExecuteQuerySingleAsync<Routine>(sql, new { userId, date }) ?? null;
         }
 
-        public async Task<List<Set>> GetSetsByRoutineIdAsync(Guid routineId)
+        public async Task<List<SetOrder>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
-SELECT s.[Id], e.[Id] as ExerciseId, MuscleArea, e.[Name], s.[Weight], s.[Sets], s.[Reps], s.[Order]
+SELECT s.[Id], s.[ExerciseId], e.[Name], s.[Order]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]
 WHERE s.[RoutineId] = @routineId
 ORDER BY s.[Order]";
-            var sets = await database.ExecuteQueryAsync<Set>(sql, new { routineId });
+            var exerciseSets = await database.ExecuteQueryAsync<SetOrder>(sql, new { routineId });
+            return exerciseSets.ToList();
+        }
+
+        public async Task<List<SetSet>> GetSetsArrayBySetId(Guid setId)
+        {
+            var sql = @"
+SELECT sa.*
+FROM [Workouts].[SetsArray] sa
+INNER JOIN [Workouts].[Sets] s
+ON sa.[SetId] = s.[Id]
+WHERE sa.[SetId] = @setId
+ORDER BY sa.[Order]";
+            var sets = await database.ExecuteQueryAsync<SetSet>(sql, new { setId });
             return sets.ToList();
         }
 
@@ -67,25 +80,52 @@ VALUES (
             return routine ?? throw new Exception("Create routine failed");
         }
 
-        public async Task<List<Set>> AddExercisesToSetAsync(Guid id, Guid routineId, ExerciseSet set)
+        public async Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order)
         {
             var sqlCreate = @"
-INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Weight], [Sets], [Reps], [Order])
+INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Order])
 VALUES (
     @id,
     @routineId,
-    @ExerciseId,
-    @Weight,
-    @Sets,
-    @Reps,
-    @Order
+    @exerciseId,
+    @order
 )";
-            await database.ExecuteAsync(sqlCreate, new { id, routineId, set.ExerciseId, set.Weight, set.Sets, set.Reps, set.Order });
-
-            return await GetSetsByRoutineIdAsync(routineId);
+            await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId, order });
         }
 
-        public async Task DeleteSetsFromRoutineAsync(Guid routineId)
+        public async Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order)
+        {
+            var sqlCreate = @"
+INSERT INTO [Workouts].[SetsArray] ([SetId], [Weight], [Sets], [Reps], [Order])
+VALUES (
+    @setId,
+    @weight,
+    @sets,
+    @reps,
+    @order
+)";
+            await database.ExecuteAsync(sqlCreate, new { setId, weight, sets, reps, order });
+        }
+
+        public async Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId)
+        {
+            var sqlGet = @"
+SELECT [Id]
+FROM [Workouts].[Sets]
+WHERE [RoutineId] = @routineId";
+
+            var sets = await database.ExecuteQueryAsync<Guid>(sqlGet, new { routineId });
+            return sets.ToList();
+        }
+
+        public async Task DeleteSetArrayFromRoutineIdAsync(Guid setId)
+        {
+            var sql = "DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId";
+
+            await database.ExecuteAsync(sql, new { setId });
+        }
+
+        public async Task DeleteSetsFromRoutineIdAsync(Guid routineId)
         {
             var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId";
 
@@ -135,14 +175,15 @@ ORDER BY r.Date desc";
         public async Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId)
         {
             var sql = @"
-SELECT TOP(10) u.Username, MAX(s.Weight) as Weight
-FROM Workouts.Sets s
-INNER JOIN Workouts.Exercises e on s.ExerciseId = e.Id
-INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
-INNER JOIN Users.Users u on r.UserId = u.Id
+SELECT TOP(10) u.Username, MAX(sa.Weight) as Weight
+FROM [Workouts].[Exercises] e
+INNER JOIN Workouts.[Sets] s ON e.Id = s.ExerciseId
+INNER JOIN Workouts.[SetsArray] sa ON s.Id = sa.SetId
+INNER JOIN Workouts.[Routine] r on s.RoutineId = r.Id
+INNER JOIN Users.[Users] u on r.UserId = u.Id
 WHERE e.Id = @exerciseId
 GROUP BY u.Username
-ORDER BY Weight DESC";
+ORDER BY Weight desc";
 
             var maxSets = await database.ExecuteQueryAsync<MaxSet>(sql, new { exerciseId });
             return maxSets.ToList();
