@@ -162,9 +162,10 @@ ORDER BY [Date] DESC";
         public async Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId)
         {
             var sql = @"
-SELECT TOP(1) s.*, r.Date
+SELECT TOP(1) s.Id, s.RoutineId, s.ExerciseId, sa.Weight, sa.Sets, sa.Reps, r.Date
 FROM Workouts.Sets s
 INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
+INNER JOIN Workouts.SetsArray sa on s.Id = sa.SetId
 WHERE s.ExerciseId = @exerciseId
 AND r.UserId = @userId
 ORDER BY r.Date desc";
