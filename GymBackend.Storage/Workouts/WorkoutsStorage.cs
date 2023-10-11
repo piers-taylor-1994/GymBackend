@@ -1,6 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
-using YOTApp.Storage;
 
 namespace GymBackend.Storage.Workouts
 {

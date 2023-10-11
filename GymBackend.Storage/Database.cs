@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 
-namespace YOTApp.Storage
+namespace GymBackend.Storage
 {
     public class Database : IDatabase
     {

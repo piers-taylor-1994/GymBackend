@@ -1,4 +1,4 @@
-﻿namespace YOTApp.Storage
+﻿namespace GymBackend.Storage
 {
     public interface IDatabase
     {

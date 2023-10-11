@@ -1,6 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Domains.User;
-using YOTApp.Storage;
 
 namespace GymBackend.Storage.Auth
 {

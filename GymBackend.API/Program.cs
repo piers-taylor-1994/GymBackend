@@ -6,12 +6,12 @@ using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
 using GymBackend.Service.Patch;
 using GymBackend.Service.Workouts;
+using GymBackend.Storage;
 using GymBackend.Storage.Auth;
 using GymBackend.Storage.Patch;
 using GymBackend.Storage.Workouts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using YOTApp.Storage;
 
 var origins = "AllowSpecificOrigins";
 

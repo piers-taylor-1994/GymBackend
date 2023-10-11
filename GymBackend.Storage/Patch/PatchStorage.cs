@@ -1,5 +1,4 @@
 ﻿using GymBackend.Core.Contracts.Patch;
-using YOTApp.Storage;
 
 namespace GymBackend.Storage.Patch
 {
