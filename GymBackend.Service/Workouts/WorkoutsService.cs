@@ -1,7 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
-using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
-using System.Dynamic;
 
 namespace GymBackend.Service.Workouts
 {
@@ -83,7 +81,7 @@ namespace GymBackend.Service.Workouts
 
         public async Task<List<RoutineMuscleArea>> GetRoutinesHistoryAsync(Guid userId)
         {
-            
+
             var routines = await storage.GetRoutinesAsync(userId);
 
             List<RoutineMuscleArea> routineMuscleAreas = new();
@@ -156,6 +154,27 @@ namespace GymBackend.Service.Workouts
             }
 
             return await storage.GetRoutineTemplateAsync(userId, routineTemplate.Id);
+        }
+
+        public async Task<List<RoutineTemplate>> UpdateRoutineTemplateAsync(Guid userId, string id, string name, List<string> exerciseIds)
+        {
+            await storage.UpdateRoutineTemplateNameAsync(userId, Guid.Parse(id), name);
+            await storage.DeleteRoutineTemplateSetsAsync(Guid.Parse(id));
+
+            foreach (var exerciseId in exerciseIds)
+            {
+                await storage.AddRoutineTemplateSetAsync(Guid.Parse(id), Guid.Parse(exerciseId));
+            }
+
+            return await storage.GetRoutineTemplatesAsync(userId);
+        }
+
+        public async Task<List<RoutineTemplate>> DeleteRoutineTemplateAsync(Guid userId, string id)
+        {
+            await storage.DeleteRoutineTemplateSetsAsync(Guid.Parse(id));
+            await storage.DeleteRoutineTemplateAsync(userId, Guid.Parse(id));
+
+            return await storage.GetRoutineTemplatesAsync(userId);
         }
 
         public async Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId)

@@ -1,4 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
+using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Storage.Workouts
@@ -252,6 +253,31 @@ ORDER BY s.[Id]";
             var sets = await database.ExecuteQueryAsync<Exercise>(sql, new { userId, id });
 
             return sets.ToList();
+        }
+
+        public async Task UpdateRoutineTemplateNameAsync(Guid userId, Guid id, string name)
+        {
+            var sql = @"
+UPDATE [Workouts].[RoutineTemplate]
+SET [Name] = @name
+WHERE [Id] = @id
+AND [UserId] = @userId";
+
+            await database.ExecuteAsync(sql, new {userId, id, name});
+        }
+
+        public async Task DeleteRoutineTemplateSetsAsync(Guid id)
+        {
+            var sql = "DELETE FROM [Workouts].[RoutineTemplateSets] WHERE [RoutineTemplateId] = @id";
+
+            await database.ExecuteAsync(sql, new { id });
+        }
+
+        public async Task DeleteRoutineTemplateAsync(Guid userId, Guid id)
+        {
+            var sql = "DELETE FROM [Workouts].[RoutineTemplate] WHERE [Id] = @id AND [UserId] = @userId";
+
+            await database.ExecuteAsync(sql, new { userId, id });
         }
 
         public async Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime from, DateTime to)

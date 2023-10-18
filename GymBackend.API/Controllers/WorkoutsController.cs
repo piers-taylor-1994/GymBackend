@@ -87,6 +87,18 @@ namespace GymBackend.API.Controllers
             return await service.GetRoutineTemplateSetsAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
         }
 
+        [HttpPut("routine/template/{id}")]
+        public async Task<List<RoutineTemplate>> UpdateRoutineTemplate(string id, [FromBody]AddRoutineTemplate routineTemplate)
+        {
+            return await service.UpdateRoutineTemplateAsync(authService.CurrentUserId(), id, routineTemplate.Name, routineTemplate.ExerciseIds).ConfigureAwait(false);
+        }
+
+        [HttpDelete("routine/template/{id}")]
+        public async Task<List<RoutineTemplate>> DeleteRoutineTemplate(string id)
+        {
+            return await service.DeleteRoutineTemplateAsync(authService.CurrentUserId(), id).ConfigureAwait(false);
+        }
+
         [HttpGet("count")]
         public async Task<WorkoutsCount> GetWorkoutsCount()
         {
