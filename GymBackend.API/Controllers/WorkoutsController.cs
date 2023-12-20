@@ -3,7 +3,6 @@ using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace GymBackend.API.Controllers
 {
@@ -46,7 +45,7 @@ namespace GymBackend.API.Controllers
 
 
         [HttpGet("routine/history")]
-        public async Task<List<RoutineMuscleArea>> GetRoutinesHistory()
+        public async Task<List<Routine>> GetRoutinesHistory()
         {
             return await service.GetRoutinesHistoryAsync(authService.CurrentUserId()).ConfigureAwait(false);
         }
@@ -58,7 +57,7 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("routine/last")]
-        public async Task<List<Set>> GetLastSetForExercises([FromBody]List<string> exerciseIds)
+        public async Task<List<Set>> GetLastSetForExercises([FromBody] List<string> exerciseIds)
         {
             return await service.GetLastSetForExercisesAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
         }
@@ -70,7 +69,7 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("routine/template")]
-        public async Task<RoutineTemplate> AddRoutineTemplate([FromBody]AddRoutineTemplate routineTemplate)
+        public async Task<RoutineTemplate> AddRoutineTemplate([FromBody] Workout routineTemplate)
         {
             return await service.AddRoutineTemplateAsync(authService.CurrentUserId(), routineTemplate.Name, routineTemplate.ExerciseIds).ConfigureAwait(false);
         }
@@ -88,7 +87,7 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPut("routine/template/{id}")]
-        public async Task<List<RoutineTemplate>> UpdateRoutineTemplate(string id, [FromBody]AddRoutineTemplate routineTemplate)
+        public async Task<List<RoutineTemplate>> UpdateRoutineTemplate(string id, [FromBody] Workout routineTemplate)
         {
             return await service.UpdateRoutineTemplateAsync(authService.CurrentUserId(), id, routineTemplate.Name, routineTemplate.ExerciseIds).ConfigureAwait(false);
         }

@@ -8,8 +8,8 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<Exercise>> GetAllExercisesAsync();
         Task<List<Guid>> GetAllSearchExercisesAsync(MuscleGroup muscle);
         Task<Routine?> GetRoutineAsync(Guid userId, DateTime date);
-        Task<List<SetOrder>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId);
-        Task<List<SetSet>> GetSetsArrayBySetId(Guid setId);
+        Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId);
+        Task<List<SetArray>> GetSetsArrayBySetId(Guid setId);
         Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date);
         Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order);
         Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order);
