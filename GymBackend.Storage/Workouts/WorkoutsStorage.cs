@@ -38,7 +38,7 @@ WHERE em.MuscleId = @muscle";
             return await database.ExecuteQuerySingleAsync<Routine>(sql, new { userId, date }) ?? null;
         }
 
-        public async Task<List<SetOrder>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
+        public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
 SELECT s.[Id], s.[ExerciseId], e.[Name], s.[Order]
@@ -47,11 +47,11 @@ INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]
 WHERE s.[RoutineId] = @routineId
 ORDER BY s.[Order]";
-            var exerciseSets = await database.ExecuteQueryAsync<SetOrder>(sql, new { routineId });
+            var exerciseSets = await database.ExecuteQueryAsync<Set>(sql, new { routineId });
             return exerciseSets.ToList();
         }
 
-        public async Task<List<SetSet>> GetSetsArrayBySetId(Guid setId)
+        public async Task<List<SetArray>> GetSetsArrayBySetId(Guid setId)
         {
             var sql = @"
 SELECT sa.*
@@ -60,7 +60,7 @@ INNER JOIN [Workouts].[Sets] s
 ON sa.[SetId] = s.[Id]
 WHERE sa.[SetId] = @setId
 ORDER BY sa.[Order]";
-            var sets = await database.ExecuteQueryAsync<SetSet>(sql, new { setId });
+            var sets = await database.ExecuteQueryAsync<SetArray>(sql, new { setId });
             return sets.ToList();
         }
 
