@@ -5,5 +5,6 @@
         public Guid ExerciseId { get; set; }
         public MuscleArea MuscleArea { get; set; }
         public string Name { get; set; }
+        public ExerciseType Type { get; set; }
     }
 }

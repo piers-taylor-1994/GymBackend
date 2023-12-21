@@ -34,9 +34,14 @@ namespace GymBackend.Service.Workouts
 
             foreach (var setOrder in exerciseOrdersList)
             {
-                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+                var sets = setOrder.Type switch
+                {
+                    ExerciseType.Reps => await storage.GetSetsArrayBySetId(setOrder.Id),
+                    ExerciseType.Timed=> await storage.GetSetsTimedArrayBySetId(setOrder.Id),
+                    _ => new List<SetArray>()
+                };
 
-                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
+                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Type, setOrder.Order, sets));
             }
 
             return new RoutineSet(routine.Id, list);
@@ -70,10 +75,23 @@ namespace GymBackend.Service.Workouts
                 var setId = Guid.NewGuid();
                 await storage.AddExercisesToSetAsync(setId, routine.Id, exercise.ExerciseId, exercise.Order);
 
-                foreach (var set in exercise.ExerciseArray)
+                switch (exercise.Type)
                 {
-                    await storage.AddExerciseSetFromArrayAsync(setId, set.Weight, set.Sets, set.Reps, set.Order);
-                }
+                    case ExerciseType.Reps:
+                        foreach (var set in exercise.ExerciseArray)
+                        {
+                            await storage.AddExerciseSetFromArrayAsync(setId, set.Weight, set.Sets, set.Reps, set.Order);
+                        }
+                        break;
+                    case ExerciseType.Timed:
+                        foreach (var set in exercise.ExerciseArray)
+                        {
+                            await storage.AddExerciseTimedSetFromArrayAsync(setId, set.Weight, set.Sets, set.Reps, set.Order);
+                        }
+                        break;
+                    default:
+                        break;
+                }   
             }
 
             return routine.Id;
@@ -103,21 +121,32 @@ namespace GymBackend.Service.Workouts
 
             foreach (var setOrder in exerciseOrdersList)
             {
-                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+                var sets = setOrder.Type switch
+                {
+                    ExerciseType.Reps => await storage.GetSetsArrayBySetId(setOrder.Id),
+                    ExerciseType.Timed => await storage.GetSetsTimedArrayBySetId(setOrder.Id),
+                    _ => new List<SetArray>()
+                };
 
-                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
+                list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Type, setOrder.Order, sets));
             }
 
             return new RoutineSet(Guid.Parse(id), list);
         }
 
-        public async Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds)
+        public async Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<ExerciseIdType> exercisesIdType)
         {
             var setList = new List<Set>();
 
-            foreach (var exerciseId in exerciseIds)
+            foreach (var exercise in exercisesIdType)
             {
-                var set = await storage.GetSetByExerciseIdAsync(userId, Guid.Parse(exerciseId));
+                var set = exercise.Type switch
+                {
+                    ExerciseType.Reps => await storage.GetSetByExerciseIdAsync(userId, Guid.Parse(exercise.ExerciseId)),
+                    ExerciseType.Timed => await storage.GetTimedSetByExerciseIdAsync(userId, Guid.Parse(exercise.ExerciseId)),
+                    _ => null
+                };
+
                 if (set != null) setList.Add(set);
             }
 
@@ -193,7 +222,7 @@ namespace GymBackend.Service.Workouts
             return new WorkoutsCount(thisWeeksCount, lastWeeksCount, thisMonthsCount, lastMonthsCount);
         }
 
-        public async Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles)
+        public async Task<Exercise> AddExerciseAsync(string name, ExerciseType type, List<MuscleGroup> muscles)
         {
             Guid exerciseId = Guid.NewGuid();
 
@@ -205,7 +234,7 @@ namespace GymBackend.Service.Workouts
 
             };
 
-            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleArea = muscleAreaCount.MaxBy(t => t.Value).Key, Name = name });
+            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleArea = muscleAreaCount.MaxBy(t => t.Value).Key, Name = name, Type = type });
             foreach (var muscle in muscles) { await storage.AddExerciseMuscleAsync(exerciseId, muscle); }
 
             return exercise;

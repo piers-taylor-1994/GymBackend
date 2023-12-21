@@ -10,7 +10,7 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets);
         Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId);
         Task<RoutineSet> GetRoutineHistoryAsync(string id);
-        Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds);
+        Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<ExerciseIdType> exercisesIdType);
         Task<List<MaxSet>> GetExerciseLeaderboardAsync(string exerciseId);
         Task<RoutineTemplate> AddRoutineTemplateAsync(Guid userId, string name, List<string> exerciseIds);
         Task<List<RoutineTemplate>> GetRoutineTemplatesAsync(Guid userId);
@@ -18,6 +18,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<RoutineTemplate>> UpdateRoutineTemplateAsync(Guid userId, string id, string name, List<string> exerciseIds);
         Task<List<RoutineTemplate>> DeleteRoutineTemplateAsync(Guid userId, string id);
         Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId);
-        Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles);
+        Task<Exercise> AddExerciseAsync(string name, ExerciseType type, List<MuscleGroup> muscles);
     }
 }

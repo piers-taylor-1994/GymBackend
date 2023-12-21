@@ -1,5 +1,4 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
-using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Storage.Workouts
@@ -41,7 +40,7 @@ WHERE em.MuscleId = @muscle";
         public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
         {
             var sql = @"
-SELECT s.[Id], s.[ExerciseId], e.[Name], s.[Order]
+SELECT s.[Id], s.[ExerciseId], e.[Name], e.[Type], s.[Order]
 FROM [Workouts].[Exercises] e
 INNER JOIN [Workouts].[Sets] s
 ON e.[Id] = s.[ExerciseId]
@@ -60,6 +59,19 @@ INNER JOIN [Workouts].[Sets] s
 ON sa.[SetId] = s.[Id]
 WHERE sa.[SetId] = @setId
 ORDER BY sa.[Order]";
+            var sets = await database.ExecuteQueryAsync<SetArray>(sql, new { setId });
+            return sets.ToList();
+        }
+
+        public async Task<List<SetArray>> GetSetsTimedArrayBySetId(Guid setId)
+        {
+            var sql = @"
+SELECT sta.[Id], sta.[SetId], sta.[Weight], sta.[Sets], sta.[Seconds] as Reps, sta.[Order]
+FROM [Workouts].[SetsTimedArray] sta
+INNER JOIN [Workouts].[Sets] s
+ON sta.[SetId] = s.[Id]
+WHERE sta.[SetId] = @setId
+ORDER BY sta.[Order]";
             var sets = await database.ExecuteQueryAsync<SetArray>(sql, new { setId });
             return sets.ToList();
         }
@@ -107,6 +119,20 @@ VALUES (
             await database.ExecuteAsync(sqlCreate, new { setId, weight, sets, reps, order });
         }
 
+        public async Task AddExerciseTimedSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order)
+        {
+            var sqlCreate = @"
+INSERT INTO [Workouts].[SetsArray] ([SetId], [Weight], [Sets], [Seconds], [Order])
+VALUES (
+    @setId,
+    @weight,
+    @sets,
+    @reps,
+    @order
+)";
+            await database.ExecuteAsync(sqlCreate, new { setId, weight, sets, reps, order });
+        }
+
         public async Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId)
         {
             var sqlGet = @"
@@ -120,7 +146,9 @@ WHERE [RoutineId] = @routineId";
 
         public async Task DeleteSetArrayFromRoutineIdAsync(Guid setId)
         {
-            var sql = "DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId";
+            var sql = @"
+DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId
+DELETE FROM [Workouts].[SetsTimedArray] WHERE [SetId] = @setId";
 
             await database.ExecuteAsync(sql, new { setId });
         }
@@ -166,6 +194,20 @@ SELECT TOP(1) s.Id, s.RoutineId, s.ExerciseId, sa.Weight, sa.Sets, sa.Reps, r.Da
 FROM Workouts.Sets s
 INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
 INNER JOIN Workouts.SetsArray sa on s.Id = sa.SetId
+WHERE s.ExerciseId = @exerciseId
+AND r.UserId = @userId
+ORDER BY r.Date desc";
+
+            return await database.ExecuteQuerySingleAsync<Set>(sql, new { userId, exerciseId }) ?? null;
+        }
+
+        public async Task<Set?> GetTimedSetByExerciseIdAsync(Guid userId, Guid exerciseId)
+        {
+            var sql = @"
+SELECT TOP(1) s.Id, s.RoutineId, s.ExerciseId, sta.Weight, sta.Sets, sta.Seconds as Reps, r.Date
+FROM Workouts.Sets s
+INNER JOIN Workouts.Routine r on s.RoutineId = r.Id
+INNER JOIN Workouts.SetsTimedArray staa on s.Id = sta.SetId
 WHERE s.ExerciseId = @exerciseId
 AND r.UserId = @userId
 ORDER BY r.Date desc";
@@ -263,7 +305,7 @@ SET [Name] = @name
 WHERE [Id] = @id
 AND [UserId] = @userId";
 
-            await database.ExecuteAsync(sql, new {userId, id, name});
+            await database.ExecuteAsync(sql, new { userId, id, name });
         }
 
         public async Task DeleteRoutineTemplateSetsAsync(Guid id)
@@ -307,15 +349,16 @@ AND Date < DATEADD(month, 1, @yearMonth)";
         public async Task<Exercise> AddExerciseAsync(Exercise exercise)
         {
             var sqlCreate = @"
-INSERT INTO [Workouts].[Exercises] ([Id], [MuscleArea], [Name])
+INSERT INTO [Workouts].[Exercises] ([Id], [MuscleArea], [Name], [Type])
 VALUES (
     @ExerciseId,
     @MuscleArea,
-    @Name
+    @Name,
+    @Type
 )";
             await database.ExecuteAsync(sqlCreate, exercise);
 
-            var sqlGet = "SELECT Id AS ExerciseId, MuscleArea, Name FROM [Workouts].[Exercises] WHERE [Id] = @ExerciseId";
+            var sqlGet = "SELECT Id AS ExerciseId, MuscleArea, Name, Type FROM [Workouts].[Exercises] WHERE [Id] = @ExerciseId";
 
             return await database.ExecuteQuerySingleAsync<Exercise>(sqlGet, exercise) ?? throw new Exception("Create exercise failed");
         }

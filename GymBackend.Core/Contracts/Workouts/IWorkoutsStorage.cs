@@ -10,15 +10,18 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<Routine?> GetRoutineAsync(Guid userId, DateTime date);
         Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId);
         Task<List<SetArray>> GetSetsArrayBySetId(Guid setId);
+        Task<List<SetArray>> GetSetsTimedArrayBySetId(Guid setId);
         Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date);
         Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order);
         Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order);
+        Task AddExerciseTimedSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order);
         Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId);
         Task DeleteSetArrayFromRoutineIdAsync(Guid setId);
         Task DeleteSetsFromRoutineIdAsync(Guid routineId);
         Task<List<Routine>> GetRoutinesAsync(Guid userId);
         Task<MuscleArea> GetRoutineMuscleAreas(Guid routineId);
         Task<Set?> GetSetByExerciseIdAsync(Guid userId, Guid exerciseId);
+        Task<Set?> GetTimedSetByExerciseIdAsync(Guid userId, Guid exerciseId);
         Task<List<MaxSet>> GetExerciseLeaderboardAsync(Guid exerciseId);
 
         Task<RoutineTemplate?> GetRoutineTemplateAsync(Guid userId, string name);

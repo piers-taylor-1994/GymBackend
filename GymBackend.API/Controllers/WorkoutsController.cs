@@ -57,9 +57,10 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("routine/last")]
-        public async Task<List<Set>> GetLastSetForExercises([FromBody] List<string> exerciseIds)
+        public async Task<List<Set>> GetLastSetForExercises([FromBody] List<ExerciseIdType> exercisesIdType)
         {
-            return await service.GetLastSetForExercisesAsync(authService.CurrentUserId(), exerciseIds).ConfigureAwait(false);
+            // TODO: THIS IS ERRORING
+            return await service.GetLastSetForExercisesAsync(authService.CurrentUserId(), exercisesIdType).ConfigureAwait(false);
         }
 
         [HttpGet("routine/leaderboard/{exerciseId}")]
@@ -105,9 +106,9 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<Exercise> AddExercise(string name, List<MuscleGroup> muscles)
+        public async Task<Exercise> AddExercise(string name, ExerciseType type, List<MuscleGroup> muscles)
         {
-            return await service.AddExerciseAsync(name, muscles).ConfigureAwait(false);
+            return await service.AddExerciseAsync(name, type, muscles).ConfigureAwait(false);
         }
     }
 }
