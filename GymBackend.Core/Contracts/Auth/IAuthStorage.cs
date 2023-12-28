@@ -8,5 +8,6 @@ namespace GymBackend.Core.Contracts.Auth
         Task<List<User>> GetUsersAsync();
         Task<Name?> GetNameByIdAsync(Guid id);
         Task<string?> GetUsernameAsync(Guid id);
+        Task<Dictionary<Guid, string>> FindUsernameByIdsAsync(IEnumerable<Guid> ids);
     }
 }

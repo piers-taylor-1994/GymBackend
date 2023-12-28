@@ -7,7 +7,8 @@ namespace GymBackend.Core.Contracts.Auth
         string GetPasswordHashAsync(string password);
         Task<AuthUser?> LogonAsync(string username, string password);
         Task<List<User>> GetUsersAsync();
-        Task<string> IssueToken(AuthUser user);
-        Task<AuthUser?> GetAuthUser(string username);
+        Task<string> IssueTokenAsync(AuthUser user);
+        Task<AuthUser?> GetAuthUserAsync(string username);
+        Task<Dictionary<Guid, string>> GetUsernameAsync(IEnumerable<Guid> ids);
     }
 }

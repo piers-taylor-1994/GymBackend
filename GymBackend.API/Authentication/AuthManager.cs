@@ -113,7 +113,7 @@ namespace GymBackend.Service.Auth
             return authUser;
         }
 
-        public async Task<string> IssueToken(AuthUser user)
+        public async Task<string> IssueTokenAsync(AuthUser user)
         {
             var authConfig = configuration.GetRequiredSection("Authentication");
 
@@ -162,9 +162,14 @@ namespace GymBackend.Service.Auth
             return await storage.GetUsersAsync();
         }
 
-        public async Task<AuthUser?> GetAuthUser(string username)
+        public async Task<AuthUser?> GetAuthUserAsync(string username)
         {
             return await storage.FindUserAsync(username) ?? null;
+        }
+
+        public async Task<Dictionary<Guid, string>> GetUsernameAsync(IEnumerable<Guid> ids)
+        {
+            return await storage.FindUsernameByIdsAsync(ids);
         }
     }
 }
