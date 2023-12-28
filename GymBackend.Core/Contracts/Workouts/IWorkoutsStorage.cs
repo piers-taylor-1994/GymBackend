@@ -1,5 +1,4 @@
-﻿using GymBackend.Core.Domains.User;
-using GymBackend.Core.Domains.Workouts;
+﻿using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Core.Contracts.Workouts
 {
@@ -7,10 +6,11 @@ namespace GymBackend.Core.Contracts.Workouts
     {
         Task<List<Exercise>> GetAllExercisesAsync();
         Task<List<Guid>> GetAllSearchExercisesAsync(MuscleGroup muscle);
-        Task<Routine?> GetRoutineAsync(Guid userId, DateTime date);
+        Task<Routine?> GetRoutineAsync(Guid userId, DateTime dateFrom, DateTime dateTo);
         Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId);
         Task<List<SetArray>> GetSetsArrayBySetId(Guid setId);
         Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date);
+        Task UpdateRoutineTimeAsync(Guid id, Guid userId, DateTime date);
         Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order);
         Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order);
         Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId);
@@ -36,5 +36,6 @@ namespace GymBackend.Core.Contracts.Workouts
 
         Task<Exercise> AddExerciseAsync(Exercise exercise);
         Task<ExerciseMuscle> AddExerciseMuscleAsync(Guid exerciseId, MuscleGroup muscle);
+        Task<List<Routine>> GetRecentWorkoutsAsync();
     }
 }

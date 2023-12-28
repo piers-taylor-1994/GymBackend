@@ -33,7 +33,7 @@ namespace GymBackend.Controllers
 
             if (authUser == null) return new UnauthorizedResult();
 
-            var token = await service.IssueToken(authUser);
+            var token = await service.IssueTokenAsync(authUser);
 
             return token;
         }
@@ -47,11 +47,11 @@ namespace GymBackend.Controllers
         [HttpPost("token/resend/{username}")]
         public async Task<ActionResult<string>> ResendToken(string username)
         {
-            var authUser = await service.GetAuthUser(username).ConfigureAwait(false);
+            var authUser = await service.GetAuthUserAsync(username).ConfigureAwait(false);
 
             if (authUser == null) return new UnauthorizedResult();
 
-            var token = await service.IssueToken(authUser);
+            var token = await service.IssueTokenAsync(authUser);
 
             return token;
         }
