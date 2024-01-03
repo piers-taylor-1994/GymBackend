@@ -5,6 +5,7 @@ namespace GymBackend.Core.Contracts.Auth
     public interface IAuthManager
     {
         string GetPasswordHashAsync(string password);
+        string CreateRandomPasswordAsync();
         Task<AuthUser?> LogonAsync(string username, string password);
         Task<List<User>> GetUsersAsync();
         Task<string> IssueTokenAsync(AuthUser user);

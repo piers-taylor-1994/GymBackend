@@ -26,6 +26,12 @@ namespace GymBackend.Controllers
             return service.GetPasswordHashAsync(password);
         }
 
+        [HttpGet("password/generate")]
+        public string GetRandomPassword()
+        {
+            return service.CreateRandomPasswordAsync();
+        }
+
         [HttpPost("logon")]
         public async Task<ActionResult<string>> Logon(Logon logon)
         {
