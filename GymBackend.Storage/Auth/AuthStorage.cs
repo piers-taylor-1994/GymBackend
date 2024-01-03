@@ -42,5 +42,16 @@ namespace GymBackend.Storage.Auth
             var sql = "SELECT [Username] FROM [Users].[Users] WHERE Id = @id";
             return await database.ExecuteQuerySingleAsync<string>(sql, new { id });
         }
+
+        public async Task<Dictionary<Guid, string>> FindUsernameByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var sql = "SELECT [Id], [Username] FROM [Users].[Users] WHERE [Id] in @ids";
+            var usernameRows = await database.ExecuteQueryAsync<Guid, string, KeyValuePair<Guid, string>>(sql, (id, username) =>
+            {
+                return new KeyValuePair<Guid, string>(id, username);
+            }, "Username", new { ids });
+
+            return new Dictionary<Guid, string>(usernameRows);
+        }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace GymBackend.Service.Auth
@@ -98,6 +99,37 @@ namespace GymBackend.Service.Auth
             return Convert.ToBase64String(passwordBytes);
         }
 
+        public string CreateRandomPasswordAsync()
+        {
+            static int RandomNumberGenerator(int min, int max)
+            {
+                Random random = new();
+                return random.Next(min, max);
+            }
+
+            static string RandomStringGenerator(int size, bool lowerCase)
+            {
+                StringBuilder builder = new();
+                Random random = new();
+                char ch;
+                for (int i = 0; i < size; i++)
+                {
+                    ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                    builder.Append(ch);
+                }
+                if (lowerCase)
+                    return builder.ToString().ToLower();
+                return builder.ToString();
+            }
+
+            StringBuilder passwordBuilder = new();
+            passwordBuilder.Append(RandomStringGenerator(2, false));
+            passwordBuilder.Append(RandomStringGenerator(4, true));
+            passwordBuilder.Append(RandomStringGenerator(2, false));
+            passwordBuilder.Append(RandomNumberGenerator(10, 99));
+            return passwordBuilder.ToString();
+        }
+
         public async Task<AuthUser?> LogonAsync(string username, string password)
         {
             var authUser = await storage.FindUserAsync(username);
@@ -113,7 +145,7 @@ namespace GymBackend.Service.Auth
             return authUser;
         }
 
-        public async Task<string> IssueToken(AuthUser user)
+        public async Task<string> IssueTokenAsync(AuthUser user)
         {
             var authConfig = configuration.GetRequiredSection("Authentication");
 
@@ -162,9 +194,14 @@ namespace GymBackend.Service.Auth
             return await storage.GetUsersAsync();
         }
 
-        public async Task<AuthUser?> GetAuthUser(string username)
+        public async Task<AuthUser?> GetAuthUserAsync(string username)
         {
             return await storage.FindUserAsync(username) ?? null;
+        }
+
+        public async Task<Dictionary<Guid, string>> GetUsernameAsync(IEnumerable<Guid> ids)
+        {
+            return await storage.FindUsernameByIdsAsync(ids);
         }
     }
 }

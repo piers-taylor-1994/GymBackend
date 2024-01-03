@@ -1,5 +1,6 @@
 ﻿using GymBackend.API.Models;
 using GymBackend.Core.Contracts;
+using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace GymBackend.API.Controllers
     {
         private readonly IWorkoutsService service;
         private readonly IAuthService authService;
+        private readonly IAuthManager authManager;
 
-        public WorkoutsController(IWorkoutsService service, IAuthService authService)
+        public WorkoutsController(IWorkoutsService service, IAuthService authService, IAuthManager authManager)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            this.authManager = authManager ?? throw new ArgumentNullException(nameof(authManager));
         }
 
         [HttpGet("")]
@@ -109,6 +112,15 @@ namespace GymBackend.API.Controllers
         public async Task<Exercise> AddExercise(string name, ExerciseType type, List<MuscleGroup> muscles)
         {
             return await service.AddExerciseAsync(name, type, muscles).ConfigureAwait(false);
+        }
+
+        [HttpGet("recent")]
+        public async Task<List<RecentWorkout>> MostRecentWorkouts()
+        {
+            var routines = await service.GetMostRecentWorkoutsAsync().ConfigureAwait(false);
+            var usernames = await authManager.GetUsernameAsync(routines.Select(r => r.UserId));
+
+            return routines.Select(r => new RecentWorkout() {  Date = r.Date, MuscleArea = r.MuscleArea, Username = usernames[r.UserId] }).ToList();
         }
     }
 }

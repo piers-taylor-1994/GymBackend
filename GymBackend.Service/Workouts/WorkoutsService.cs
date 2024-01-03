@@ -1,5 +1,6 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GymBackend.Service.Workouts
 {
@@ -24,7 +25,7 @@ namespace GymBackend.Service.Workouts
 
         public async Task<RoutineSet?> GetRoutineAsync(Guid userId)
         {
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date);
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
 
             if (routine == null) return null;
 
@@ -52,14 +53,16 @@ namespace GymBackend.Service.Workouts
         {
             if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
 
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date);
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
 
             if (routine == null)
             {
-                routine = await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now.Date);
+                routine = await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now);
             }
             else
             {
+                await storage.UpdateRoutineTimeAsync(routine.Id, userId, DateTime.Now);
+
                 var setIdList = await storage.GetSetIdsFromRoutineId(routine.Id);
 
                 foreach (var setId in setIdList)
@@ -217,8 +220,8 @@ namespace GymBackend.Service.Workouts
 
             var thisWeeksCount = await storage.GetWeeksWorkoutsCountAsync(userId, DateTime.Now.Date, DateTime.Now.AddDays(-i).Date);
             var lastWeeksCount = await storage.GetWeeksWorkoutsCountAsync(userId, DateTime.Now.Date.AddDays(-(i + 1)), DateTime.Now.Date.AddDays(-(i + 7)));
-            var thisMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(2023, DateTime.Now.Month, 01));
-            var lastMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(2023, DateTime.Now.Month, 01).AddMonths(-1));
+            var thisMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01));
+            var lastMonthsCount = await storage.GetMonthsWorkoutsCountAsync(userId, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01).AddMonths(-1));
             return new WorkoutsCount(thisWeeksCount, lastWeeksCount, thisMonthsCount, lastMonthsCount);
         }
 
@@ -238,6 +241,18 @@ namespace GymBackend.Service.Workouts
             foreach (var muscle in muscles) { await storage.AddExerciseMuscleAsync(exerciseId, muscle); }
 
             return exercise;
+        }
+
+        public async Task<List<Routine>> GetMostRecentWorkoutsAsync()
+        {
+            var routines = await storage.GetRecentWorkoutsAsync();
+
+            foreach (var routine in routines)
+            {
+                routine.MuscleArea = await storage.GetRoutineMuscleAreas(routine.Id);
+            }
+
+            return routines;
         }
     }
 }

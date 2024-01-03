@@ -1,5 +1,6 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GymBackend.Storage.Workouts
 {
@@ -30,11 +31,15 @@ WHERE em.MuscleId = @muscle";
             return exercises.ToList();
         }
 
-        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date)
+        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime dateFrom, DateTime dateTo)
         {
-            var sql = "SELECT * FROM [Workouts].[Routine] WHERE [UserId] = @userId AND [Date] = @date";
+            
+            var sql = @"
+SELECT * FROM [Workouts].[Routine] 
+WHERE [UserId] = @userId AND 
+[Date] >= @dateFrom AND [Date] <= @dateTo";
 
-            return await database.ExecuteQuerySingleAsync<Routine>(sql, new { userId, date }) ?? null;
+            return await database.ExecuteQuerySingleAsync<Routine>(sql, new { userId, dateFrom, dateTo }) ?? null;
         }
 
         public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
@@ -87,9 +92,18 @@ VALUES (
 )";
             await database.ExecuteAsync(sqlCreate, new { id, userId, date });
 
-            var routine = await GetRoutineAsync(userId, date);
+            var routine = await GetRoutineAsync(userId, date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
 
             return routine ?? throw new Exception("Create routine failed");
+        }
+
+        public async Task UpdateRoutineTimeAsync(Guid id, Guid userId, DateTime date)
+        {
+            var sql = @"
+UPDATE [Workouts].[Routine]
+SET [Date] = @date
+WHERE [Id] = @id AND [UserId] = @userId";
+            await database.ExecuteAsync(sql, new { id, userId, date });
         }
 
         public async Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order)
@@ -376,6 +390,16 @@ VALUES (
             var sqlGet = "SELECT * FROM [Workouts].[ExerciseMuscles] WHERE [ExerciseId] = @exerciseId AND [MuscleId] = @muscle";
 
             return await database.ExecuteQuerySingleAsync<ExerciseMuscle>(sqlGet, new { exerciseId, muscle }) ?? throw new Exception("Create exercise muscle failed");
+        }
+
+        public async Task<List<Routine>> GetRecentWorkoutsAsync()
+        {
+            var sql = @"
+SELECT TOP 5 *
+FROM [Workouts].[Routine] r
+ORDER BY Date desc";
+            var routines = await database.ExecuteQueryAsync<Routine>(sql);
+            return routines.ToList();
         }
     }
 }

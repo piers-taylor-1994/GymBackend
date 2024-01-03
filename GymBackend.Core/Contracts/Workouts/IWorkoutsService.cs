@@ -18,6 +18,8 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<List<RoutineTemplate>> UpdateRoutineTemplateAsync(Guid userId, string id, string name, List<string> exerciseIds);
         Task<List<RoutineTemplate>> DeleteRoutineTemplateAsync(Guid userId, string id);
         Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId);
+        Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles);
+        Task<List<Routine>> GetMostRecentWorkoutsAsync();
         Task<Exercise> AddExerciseAsync(string name, ExerciseType type, List<MuscleGroup> muscles);
     }
 }
