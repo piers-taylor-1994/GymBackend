@@ -3,6 +3,7 @@ using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Domains.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace GymBackend.Controllers
 {
@@ -35,6 +36,8 @@ namespace GymBackend.Controllers
         [HttpPost("logon")]
         public async Task<ActionResult<string>> Logon(Logon logon)
         {
+            if (logon.Username.IsNullOrEmpty() || logon.Password.IsNullOrEmpty()) throw new Exception("Logon details missing");
+
             var authUser = await service.LogonAsync(logon.Username, logon.Password).ConfigureAwait(false);
 
             if (authUser == null) return new UnauthorizedResult();
