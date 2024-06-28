@@ -20,5 +20,6 @@
         public List<Instructor> Instructors { get; set; }
         public Time Starts_At { get; set; }
         public Time Ends_At { get; set; }
+        public int Spaces { get; set; }
     }
 }
