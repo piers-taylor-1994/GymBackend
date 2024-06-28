@@ -71,6 +71,8 @@ builder.Services.AddTransient<IPatchService, PatchService>();
 builder.Services.AddTransient<IPatchStorage, PatchStorage>();
 builder.Services.AddTransient<IBookingService, BookingService>();
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
