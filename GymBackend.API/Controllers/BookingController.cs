@@ -24,7 +24,7 @@ namespace GymBackend.API.Controllers
             return await service.GetTimetable();
         }
 
-        [HttpPost
+        [HttpPost]
         public async Task<string> CreateBooking(int bookingId)
         {
             return await service.CreateBookingAsync(authService.CurrentUserId(), bookingId).ConfigureAwait(false);
