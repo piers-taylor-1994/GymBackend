@@ -312,7 +312,7 @@ SELECT COUNT(*)
 FROM [Workouts].[Routine]
 WHERE UserId = @userId
 AND Date >= @yearMonth
-AND Date < DATEADD(month, 1, @yearMonth)";
+AND Date <= DATEADD(month, 1, @yearMonth)";
 
             return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, yearMonth });
         }
