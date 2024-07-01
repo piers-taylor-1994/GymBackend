@@ -12,6 +12,11 @@
         public string Format_24_Hour { get; set; }
     }
 
+    public class Date
+    {
+        public DateTime Raw { get; set; }
+    }
+
     public class BookingItem
     {
         public int Bookings_Count { get; set; }
@@ -21,5 +26,6 @@
         public Time Starts_At { get; set; }
         public Time Ends_At { get; set; }
         public int Spaces { get; set; }
+        public Date Date { get; set; }
     }
 }

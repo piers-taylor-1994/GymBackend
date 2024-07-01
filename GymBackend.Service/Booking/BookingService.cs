@@ -32,7 +32,7 @@ namespace GymBackend.Service.Booking
             string responseString = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<Deserialize.Root>(responseString);
 
-            return result.Data.Where(r => r.Name.Contains("yoga", StringComparison.CurrentCultureIgnoreCase)).ToList();
+            return result.Data.Where(r => r.Spaces > 0).ToList();
         }
 
         public async Task<string> CreateBookingAsync(Guid userId, int bookingId)
