@@ -1,6 +1,7 @@
 ﻿using GymBackend.Core.Contracts.Booking;
 using GymBackend.Core.Domains.Booking;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -51,7 +52,7 @@ namespace GymBackend.Service.Booking
             {
                 var response = await httpClient.SendAsync(request, CancellationToken.None);
                 string responseString = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<Deserialize.Root>(responseString);
+                var result = JsonConvert.DeserializeObject<Deserialize.TimetableRoot>(responseString);
                 if (result != null && result.Data != null) bookings = bookings.Concat(result.Data.Where(r => r.Spaces > 0 && r.Name.Contains("yoga", StringComparison.CurrentCultureIgnoreCase))).ToList();
             }
 
@@ -75,6 +76,19 @@ namespace GymBackend.Service.Booking
 
             if (check1 && check2) return "Successfully booked!";
             return "Booking failed";
+        }
+
+        public async Task<List<int>> GetBookedClassesAsync(Guid userId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://better-admin.org.uk/api/my-account/bookings?filter=future"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth);
+            request.Headers.Add("Origin", origin);
+
+            var response = await httpClient.SendAsync(request, CancellationToken.None);
+            string responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<Deserialize.BookedRoot>(responseString);
+
+            return result?.Data.Select(r => r.Activity_Id).ToList() ?? new List<int>();
         }
 
         private async Task<bool> AddToBasket(int bookingId)

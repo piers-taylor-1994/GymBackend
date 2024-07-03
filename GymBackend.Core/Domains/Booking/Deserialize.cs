@@ -2,9 +2,14 @@
 {
     public class Deserialize
     {
-        public class Root
+        public class TimetableRoot
         {
             public List<BookingItem> Data { get; set; }
+        }
+
+        public class BookedRoot
+        {
+            public List<BookedItem> Data { get; set; }
         }
     }
 }
