@@ -29,5 +29,11 @@ namespace GymBackend.API.Controllers
         {
             return await service.CreateBookingAsync(authService.CurrentUserId(), bookingId).ConfigureAwait(false);
         }
+
+        [HttpGet("booked")]
+        public async Task<List<int>> GetBookedClasses()
+        {
+            return await service.GetBookedClassesAsync(authService.CurrentUserId()).ConfigureAwait(false);
+        }
     }
 }

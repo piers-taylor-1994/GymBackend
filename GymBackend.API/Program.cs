@@ -42,6 +42,7 @@ builder.Services.AddCors(options =>
 builder.Services
     .AddControllers(c =>
     {
+        // This makes endpoints requirer a bearer token
         var policy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .Build();
