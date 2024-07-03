@@ -78,7 +78,7 @@ namespace GymBackend.Service.Booking
             return "Booking failed";
         }
 
-        public async Task<List<int>> GetBookedClassesAsync(Guid userId)
+        public async Task<List<int>> GetBookedClassesAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://better-admin.org.uk/api/my-account/bookings?filter=future"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth);
