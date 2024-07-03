@@ -33,7 +33,7 @@ namespace GymBackend.API.Controllers
         [HttpGet("booked")]
         public async Task<List<int>> GetBookedClasses()
         {
-            return await service.GetBookedClassesAsync(authService.CurrentUserId()).ConfigureAwait(false);
+            return await service.GetBookedClassesAsync().ConfigureAwait(false);
         }
     }
 }
