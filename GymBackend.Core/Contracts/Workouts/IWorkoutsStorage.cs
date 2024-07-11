@@ -31,7 +31,7 @@ namespace GymBackend.Core.Contracts.Workouts
         Task DeleteRoutineTemplateSetsAsync(Guid id);
         Task DeleteRoutineTemplateAsync(Guid userId, Guid id);
 
-        Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime from, DateTime to);
+        Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime startDate, DateTime endDate);
         Task<int> GetMonthsWorkoutsCountAsync(Guid userId, DateTime yearMonth);
 
         Task<Exercise> AddExerciseAsync(Exercise exercise);

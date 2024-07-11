@@ -293,16 +293,16 @@ AND [UserId] = @userId";
             await database.ExecuteAsync(sql, new { userId, id });
         }
 
-        public async Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime from, DateTime to)
+        public async Task<int> GetWeeksWorkoutsCountAsync(Guid userId, DateTime startDate, DateTime endDate)
         {
             var sql = @"
 SELECT COUNT(*)
 FROM [Workouts].[Routine]
-WHERE UserId = @userId
-AND Date <= @from 
-AND Date >= @to";
+WHERE UserId = @userId 
+AND Date >= @startDate
+AND Date <= @endDate";
 
-            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, from, to });
+            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, startDate, endDate });
         }
 
         public async Task<int> GetMonthsWorkoutsCountAsync(Guid userId, DateTime yearMonth)
