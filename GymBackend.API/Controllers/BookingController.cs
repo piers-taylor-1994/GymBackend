@@ -35,5 +35,11 @@ namespace GymBackend.API.Controllers
         {
             return await service.GetBookedClassesAsync().ConfigureAwait(false);
         }
+
+        [HttpPut("token/{token}")]
+        public async Task<string> SetToken(string token)
+        {
+            return await service.SetTokenAsync(token);
+        }
     }
 }

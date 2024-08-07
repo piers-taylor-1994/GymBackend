@@ -10,6 +10,7 @@ using GymBackend.Service.Patch;
 using GymBackend.Service.Workouts;
 using GymBackend.Storage;
 using GymBackend.Storage.Auth;
+using GymBackend.Storage.Booking;
 using GymBackend.Storage.Patch;
 using GymBackend.Storage.Workouts;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +72,7 @@ builder.Services.AddTransient<IWorkoutsStorage, WorkoutsStorage>();
 builder.Services.AddTransient<IPatchService, PatchService>();
 builder.Services.AddTransient<IPatchStorage, PatchStorage>();
 builder.Services.AddTransient<IBookingService, BookingService>();
+builder.Services.AddTransient<IBookingStorage, BookingStorage>();
 
 builder.Services.AddHttpClient();
 

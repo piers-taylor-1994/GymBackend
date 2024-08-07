@@ -10,17 +10,19 @@ namespace GymBackend.Service.Booking
     public class BookingService : IBookingService
     {
         private readonly HttpClient httpClient;
+        private readonly IBookingStorage storage;
 
-        public BookingService(HttpClient httpClient)
+        public BookingService(HttpClient httpClient, IBookingStorage storage)
         {
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        private readonly string auth = "Bearer v4.local.uk5TgNXsHIaK9lQ7dxNagw5YH-aShddDrzF_-VojO8fAYKiyhoZsEJP5vGrEl6cyfCkJVNcVmnBHXae2TAbA2nkHk3sIgVHSW4PazLADp8a55w07R-5agYwY_FBZ2wPe0hc_6Gdmqda_iI1pXJWYO40VRg-5bWPKrMq8mGM--RbABGzBeVy2JaIut4QQ-OvXy5vx0lJQDuwOxjI1";
         private readonly string origin = "https://bookings.better.org.uk";
 
         public async Task<List<BookingItem>> GetTimetable()
         {
+            var auth = await storage.GetTokenAsync();
             var date = DateTime.UtcNow;
             var requestMessages = new List<HttpRequestMessage>();
             var bookings = new List<BookingItem>();
@@ -80,6 +82,7 @@ namespace GymBackend.Service.Booking
 
         public async Task<List<int>> GetBookedClassesAsync()
         {
+            var auth = await storage.GetTokenAsync();
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://better-admin.org.uk/api/my-account/bookings?filter=future"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth);
             request.Headers.Add("Origin", origin);
@@ -93,6 +96,7 @@ namespace GymBackend.Service.Booking
 
         private async Task<bool> AddToBasket(int bookingId)
         {
+            var auth = await storage.GetTokenAsync();
             var url = new Uri("https://better-admin.org.uk/api/activities/cart/add");
 
             string body = "{\"items\":[{\"id\":\"" + bookingId + "\",\"type\":\"activity\",\"pricing_option_id\":1,\"apply_benefit\":true,\"activity_restriction_ids\":[]}],\"membership_user_id\":849218,\"selected_user_id\":null}";
@@ -109,6 +113,7 @@ namespace GymBackend.Service.Booking
 
         private async Task<bool> Checkout()
         {
+            var auth = await storage.GetTokenAsync();
             var url = new Uri("https://better-admin.org.uk/api/checkout/complete");
 
             var request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -119,6 +124,11 @@ namespace GymBackend.Service.Booking
             var response = await httpClient.SendAsync(request, CancellationToken.None);
 
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<string> SetTokenAsync(string token)
+        {
+            return await storage.SetTokenAsync(token);
         }
     }
 }

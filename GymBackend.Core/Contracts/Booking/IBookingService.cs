@@ -7,5 +7,6 @@ namespace GymBackend.Core.Contracts.Booking
         public Task<List<BookingItem>> GetTimetable();
         public Task<string> CreateBookingAsync(Guid userId, int bookingId);
         public Task<List<int>> GetBookedClassesAsync();
+        public Task<string> SetTokenAsync(string token);
     }
 }
