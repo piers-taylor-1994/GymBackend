@@ -33,7 +33,6 @@ WHERE em.MuscleId = @muscle";
 
         public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date)
         {
-            //Test comments
             var routines = await GetRoutinesAsync(userId);
 
             return routines.FirstOrDefault(r => r.Date.Date == date.Date);
