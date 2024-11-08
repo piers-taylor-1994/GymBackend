@@ -31,15 +31,11 @@ WHERE em.MuscleId = @muscle";
             return exercises.ToList();
         }
 
-        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime dateFrom, DateTime dateTo)
+        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date)
         {
-            
-            var sql = @"
-SELECT * FROM [Workouts].[Routine] 
-WHERE [UserId] = @userId AND 
-[Date] >= @dateFrom AND [Date] <= @dateTo";
+            var routines = await GetRoutinesAsync(userId);
 
-            return await database.ExecuteQuerySingleAsync<Routine>(sql, new { userId, dateFrom, dateTo }) ?? null;
+            return routines.FirstOrDefault(r => r.Date.Date == date.Date);
         }
 
         public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
@@ -79,7 +75,7 @@ VALUES (
 )";
             await database.ExecuteAsync(sqlCreate, new { id, userId, date });
 
-            var routine = await GetRoutineAsync(userId, date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+            var routine = await GetRoutineAsync(userId, date);
 
             return routine ?? throw new Exception("Create routine failed");
         }
@@ -131,18 +127,14 @@ WHERE [RoutineId] = @routineId";
             return sets.ToList();
         }
 
-        public async Task DeleteSetArrayFromRoutineIdAsync(Guid setId)
+        public async Task DeleteSetsFromRoutineIdAsync(Guid routineId, List<Guid> setIds)
         {
-            var sql = "DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId";
+            foreach (var setId in setIds)
+            {
+                await database.ExecuteAsync("DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId", new { setId });
+            }
 
-            await database.ExecuteAsync(sql, new { setId });
-        }
-
-        public async Task DeleteSetsFromRoutineIdAsync(Guid routineId)
-        {
-            var sql = "DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId";
-
-            await database.ExecuteAsync(sql, new { routineId });
+            await database.ExecuteAsync("DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId", new { routineId });
         }
 
         public async Task<MuscleArea> GetRoutineMuscleAreas(Guid routineId)

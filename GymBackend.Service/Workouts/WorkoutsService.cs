@@ -1,6 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GymBackend.Service.Workouts
 {
@@ -25,7 +24,7 @@ namespace GymBackend.Service.Workouts
 
         public async Task<RoutineSet?> GetRoutineAsync(Guid userId)
         {
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+            var routine = await storage.GetRoutineAsync(userId, DateTime.Now);
 
             if (routine == null) return null;
 
@@ -48,24 +47,17 @@ namespace GymBackend.Service.Workouts
         {
             if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
 
-            var routine = await storage.GetRoutineAsync(userId, DateTime.Now.Date, DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59));
+            var routines = await storage.GetRoutinesAsync(userId);
+            var routine = routines.FirstOrDefault(r => r.Date.Date == DateTime.Now.Date);
 
-            if (routine == null)
-            {
-                routine = await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now);
-            }
+            if (routine == null) routine = await storage.AddRoutineAsync(Guid.NewGuid(), userId, DateTime.Now);
             else
             {
                 await storage.UpdateRoutineTimeAsync(routine.Id, userId, DateTime.Now);
 
                 var setIdList = await storage.GetSetIdsFromRoutineId(routine.Id);
 
-                foreach (var setId in setIdList)
-                {
-                    await storage.DeleteSetArrayFromRoutineIdAsync(setId);
-                }
-
-                await storage.DeleteSetsFromRoutineIdAsync(routine.Id);
+                await storage.DeleteSetsFromRoutineIdAsync(routine.Id, setIdList);
             }
 
             foreach (var exercise in exerciseSets)
