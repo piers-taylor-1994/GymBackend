@@ -43,6 +43,9 @@ namespace GymBackend.Service.Workouts
 
         }
 
+        //TODO: Add a controller method to add a ghost routine to the GhostRoutine/GhostSets/GhostSetsArray tables
+        //Then a user can add a ghost routine if they forgot to click the submit button
+        //It'll hijack all of the existing addroutine stuff
         public async Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets)
         {
             if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
@@ -67,7 +70,7 @@ namespace GymBackend.Service.Workouts
 
                 foreach (var set in exercise.ExerciseArray)
                 {
-                    await storage.AddExerciseSetFromArrayAsync(setId, set.Weight, set.Sets, set.Reps, set.Order);
+                    if (set.Weight is not null and >= 0  && set.Sets is not null and > 0 && set.Reps is not null and > 0) await storage.AddExerciseSetFromArrayAsync(setId, set.Weight.Value, set.Sets.Value, set.Reps.Value, set.Order);
                 }
             }
 
