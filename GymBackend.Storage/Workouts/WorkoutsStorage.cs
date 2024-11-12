@@ -31,9 +31,9 @@ WHERE em.MuscleId = @muscle";
             return exercises.ToList();
         }
 
-        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date)
+        public async Task<Routine?> GetRoutineAsync(Guid userId, DateTime date, string table)
         {
-            var routines = await GetRoutinesAsync(userId);
+            var routines = await GetRoutinesAsync(userId, table);
 
             return routines.FirstOrDefault(r => r.Date.Date == date.Date);
         }
@@ -64,10 +64,10 @@ ORDER BY sa.[Order]";
             return sets.ToList();
         }
 
-        public async Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date)
+        public async Task<Routine> AddRoutineAsync(Guid id, Guid userId, DateTime date, string table)
         {
-            var sqlCreate = @"
-INSERT INTO [Workouts].[Routine] ([Id], [UserId], [Date])
+            var sqlCreate = $@"
+INSERT INTO [Workouts].[{table}Routine] ([Id], [UserId], [Date])
 VALUES (
     @id,
     @userId,
@@ -75,24 +75,24 @@ VALUES (
 )";
             await database.ExecuteAsync(sqlCreate, new { id, userId, date });
 
-            var routine = await GetRoutineAsync(userId, date);
+            var routine = await GetRoutineAsync(userId, date, table);
 
             return routine ?? throw new Exception("Create routine failed");
         }
 
-        public async Task UpdateRoutineTimeAsync(Guid id, Guid userId, DateTime date)
+        public async Task UpdateRoutineTimeAsync(Guid id, Guid userId, DateTime date, string table)
         {
-            var sql = @"
-UPDATE [Workouts].[Routine]
+            var sql = $@"
+UPDATE [Workouts].[{table}Routine]
 SET [Date] = @date
 WHERE [Id] = @id AND [UserId] = @userId";
             await database.ExecuteAsync(sql, new { id, userId, date });
         }
 
-        public async Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order)
+        public async Task AddExercisesToSetAsync(Guid id, Guid routineId, Guid exerciseId, int order, string table)
         {
-            var sqlCreate = @"
-INSERT INTO [Workouts].[Sets] ([Id], [RoutineId], [ExerciseId], [Order])
+            var sqlCreate = $@"
+INSERT INTO [Workouts].[{table}Sets] ([Id], [RoutineId], [ExerciseId], [Order])
 VALUES (
     @id,
     @routineId,
@@ -102,10 +102,10 @@ VALUES (
             await database.ExecuteAsync(sqlCreate, new { id, routineId, exerciseId, order });
         }
 
-        public async Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order)
+        public async Task AddExerciseSetFromArrayAsync(Guid setId, float weight, int sets, int reps, int order, string table)
         {
-            var sqlCreate = @"
-INSERT INTO [Workouts].[SetsArray] ([SetId], [Weight], [Sets], [Reps], [Order])
+            var sqlCreate = $@"
+INSERT INTO [Workouts].[{table}SetsArray] ([SetId], [Weight], [Sets], [Reps], [Order])
 VALUES (
     @setId,
     @weight,
@@ -116,25 +116,25 @@ VALUES (
             await database.ExecuteAsync(sqlCreate, new { setId, weight, sets, reps, order });
         }
 
-        public async Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId)
+        public async Task<List<Guid>> GetSetIdsFromRoutineId(Guid routineId, string table)
         {
-            var sqlGet = @"
+            var sqlGet = $@"
 SELECT [Id]
-FROM [Workouts].[Sets]
+FROM [Workouts].[{table}Sets]
 WHERE [RoutineId] = @routineId";
 
             var sets = await database.ExecuteQueryAsync<Guid>(sqlGet, new { routineId });
             return sets.ToList();
         }
 
-        public async Task DeleteSetsFromRoutineIdAsync(Guid routineId, List<Guid> setIds)
+        public async Task DeleteSetsFromRoutineIdAsync(Guid routineId, List<Guid> setIds, string table)
         {
             foreach (var setId in setIds)
             {
-                await database.ExecuteAsync("DELETE FROM [Workouts].[SetsArray] WHERE [SetId] = @setId", new { setId });
+                await database.ExecuteAsync($"DELETE FROM [Workouts].[{table}SetsArray] WHERE [SetId] = @setId", new { setId });
             }
 
-            await database.ExecuteAsync("DELETE FROM [Workouts].[Sets] WHERE [RoutineId] = @routineId", new { routineId });
+            await database.ExecuteAsync($"DELETE FROM [Workouts].[{table}Sets] WHERE [RoutineId] = @routineId", new { routineId });
         }
 
         public async Task<MuscleArea> GetRoutineMuscleAreas(Guid routineId)
@@ -151,11 +151,11 @@ WHERE [RoutineId] = @routineId";
         }
 
 
-        public async Task<List<Routine>> GetRoutinesAsync(Guid userId)
+        public async Task<List<Routine>> GetRoutinesAsync(Guid userId, string table)
         {
-            var sql = @"
+            var sql = $@"
 SELECT DISTINCT [r].* 
-FROM [Workouts].[Routine] r
+FROM [Workouts].[{table}Routine] r
 WHERE [UserId] = @userId
 ORDER BY [Date] DESC";
 
