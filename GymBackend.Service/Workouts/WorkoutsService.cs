@@ -76,6 +76,8 @@ namespace GymBackend.Service.Workouts
                 }
             }
 
+            if ((SubmissionType)submissionType == SubmissionType.Real) await storage.DeleteGhostDataAsync(DateTime.Now.Date);
+
             return routine.Id;
         }
 

@@ -1,6 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Core.Domains.Workouts;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GymBackend.Storage.Workouts
 {
@@ -348,6 +347,25 @@ FROM [Workouts].[Routine] r
 ORDER BY Date desc";
             var routines = await database.ExecuteQueryAsync<Routine>(sql);
             return routines.ToList();
+        }
+
+        public async Task DeleteGhostDataAsync(DateTime date)
+        {
+            var ghostRoutines = await database.ExecuteQueryAsync<Routine>("SELECT * FROM [Workouts].[GhostRoutine]");
+            var ghostRoutine = ghostRoutines.FirstOrDefault(g => g.Date.Date == date.Date);
+
+            if (ghostRoutine != null)
+            {
+                var ghostSetsIds = await database.ExecuteQueryAsync<Guid>("SELECT [Id] FROM [Workouts].[GhostSets] WHERE [RoutineId] = @Id", new { ghostRoutine.Id });
+
+                foreach (var ghostSetId in ghostSetsIds)
+                {
+                    await database.ExecuteAsync("DELETE FROM [Workouts].[GhostSetsArray] WHERE [SetId] = @ghostSetId", new { ghostSetId });
+                    await database.ExecuteAsync("DELETE FROM [Workouts].[GhostSets] WHERE [Id] = @ghostSetId", new { ghostSetId });
+                }
+
+                await database.ExecuteAsync("DELETE FROM [Workouts].[GhostRoutine] WHERE [Id] = @Id", new { ghostRoutine.Id });
+            }
         }
     }
 }
