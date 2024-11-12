@@ -37,12 +37,12 @@ WHERE em.MuscleId = @muscle";
             return routines.FirstOrDefault(r => r.Date.Date == date.Date);
         }
 
-        public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId)
+        public async Task<List<Set>> GetSetExerciseIdOrderByRoutineIdAsync(Guid routineId, string table)
         {
-            var sql = @"
+            var sql = $@"
 SELECT s.[Id], s.[ExerciseId], e.[Name], s.[Order]
 FROM [Workouts].[Exercises] e
-INNER JOIN [Workouts].[Sets] s
+INNER JOIN [Workouts].[{table}Sets] s
 ON e.[Id] = s.[ExerciseId]
 WHERE s.[RoutineId] = @routineId
 ORDER BY s.[Order]";
@@ -50,12 +50,12 @@ ORDER BY s.[Order]";
             return exerciseSets.ToList();
         }
 
-        public async Task<List<SetArray>> GetSetsArrayBySetId(Guid setId)
+        public async Task<List<SetArray>> GetSetsArrayBySetId(Guid setId, string table)
         {
-            var sql = @"
+            var sql = $@"
 SELECT sa.*
-FROM [Workouts].[SetsArray] sa
-INNER JOIN [Workouts].[Sets] s
+FROM [Workouts].[{table}SetsArray] sa
+INNER JOIN [Workouts].[{table}Sets] s
 ON sa.[SetId] = s.[Id]
 WHERE sa.[SetId] = @setId
 ORDER BY sa.[Order]";

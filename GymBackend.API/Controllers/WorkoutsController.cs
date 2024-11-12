@@ -48,15 +48,15 @@ namespace GymBackend.API.Controllers
 
 
         [HttpGet("routine/history")]
-        public async Task<List<Routine>> GetRoutinesHistory()
+        public async Task<List<Routine>> GetRoutinesHistory(int submissionType)
         {
-            return await service.GetRoutinesHistoryAsync(authService.CurrentUserId()).ConfigureAwait(false);
+            return await service.GetRoutinesHistoryAsync(authService.CurrentUserId(), submissionType).ConfigureAwait(false);
         }
 
         [HttpGet("routine/history/{id}")]
-        public async Task<RoutineSet> GetRoutineHistory(string id)
+        public async Task<RoutineSet> GetRoutineHistory(string id, int submissionType)
         {
-            return await service.GetRoutineHistoryAsync(id).ConfigureAwait(false);
+            return await service.GetRoutineHistoryAsync(id, submissionType).ConfigureAwait(false);
         }
 
         [HttpPost("routine/last")]

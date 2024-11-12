@@ -24,18 +24,18 @@ namespace GymBackend.Service.Workouts
 
         public async Task<RoutineSet?> GetRoutineAsync(Guid userId, int submissionType)
         {
-            var table = TableGenerator((SubmissionType)submissionType);
+            var table = TableGenerator(submissionType);
             var routine = await storage.GetRoutineAsync(userId, DateTime.Now, table);
 
             if (routine == null) return null;
 
-            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(routine.Id);
+            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(routine.Id, table);
 
             var list = new List<ExerciseSets>();
 
             foreach (var setOrder in exerciseOrdersList)
             {
-                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+                var sets = await storage.GetSetsArrayBySetId(setOrder.Id, table);
 
                 list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
             }
@@ -50,7 +50,7 @@ namespace GymBackend.Service.Workouts
         public async Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets, int submissionType)
         {
             if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
-            var table = TableGenerator((SubmissionType)submissionType);
+            var table = TableGenerator(submissionType);
 
             var routines = await storage.GetRoutinesAsync(userId, table);
             var routine = routines.FirstOrDefault(r => r.Date.Date == DateTime.Now.Date);
@@ -81,9 +81,12 @@ namespace GymBackend.Service.Workouts
             return routine.Id;
         }
 
-        public async Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId)
+        public async Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId, int submissionType)
         {
-            var routines = await storage.GetRoutinesAsync(userId, "");
+            var table = TableGenerator(submissionType);
+            var routines = await storage.GetRoutinesAsync(userId, table);
+
+            if ((SubmissionType)submissionType == SubmissionType.Ghost) return routines;
 
             List<Routine> routineMuscleAreas = new();
 
@@ -97,15 +100,16 @@ namespace GymBackend.Service.Workouts
             return routineMuscleAreas;
         }
 
-        public async Task<RoutineSet> GetRoutineHistoryAsync(string id)
+        public async Task<RoutineSet> GetRoutineHistoryAsync(string id, int submissionType)
         {
-            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(Guid.Parse(id));
+            var table = TableGenerator(submissionType);
+            var exerciseOrdersList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(Guid.Parse(id), table);
 
             var list = new List<ExerciseSets>();
 
             foreach (var setOrder in exerciseOrdersList)
             {
-                var sets = await storage.GetSetsArrayBySetId(setOrder.Id);
+                var sets = await storage.GetSetsArrayBySetId(setOrder.Id, table);
 
                 list.Add(new ExerciseSets(setOrder.Id, setOrder.ExerciseId, setOrder.Name, setOrder.Order, sets));
             }
@@ -225,9 +229,9 @@ namespace GymBackend.Service.Workouts
             return routines;
         }
 
-        private static string TableGenerator(SubmissionType submissionType)
+        private static string TableGenerator(int submissionType)
         {
-            return submissionType == SubmissionType.Ghost ? "Ghost" : string.Empty;
+            return (SubmissionType)submissionType == SubmissionType.Ghost ? "Ghost" : string.Empty;
         }
     }
 }
