@@ -20,5 +20,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId);
         Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles);
         Task<List<Routine>> GetMostRecentWorkoutsAsync();
+        Task<Guid> ResurrectGhostAsync(Guid userId, Guid routineId, DateTime date);
     }
 }

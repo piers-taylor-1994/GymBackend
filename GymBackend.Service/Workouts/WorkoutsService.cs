@@ -1,4 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Workouts;
+using GymBackend.Core.Domains.User;
 using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Service.Workouts
@@ -227,6 +228,33 @@ namespace GymBackend.Service.Workouts
             }
 
             return routines;
+        }
+
+        public async Task<Guid> ResurrectGhostAsync(Guid userId, Guid routineId, DateTime date)
+        {
+            var table = "Ghost";
+            var ghostRoutines = await storage.GetRoutinesAsync(userId, table);
+
+            // Get ghost data
+            var ghostRoutine = ghostRoutines.FirstOrDefault(r => r.UserId == userId && r.Id == routineId && r.Date.Date == date.Date) ?? throw new Exception("Cannot find ghostRoutine");
+            var ghostSetList = await storage.GetSetExerciseIdOrderByRoutineIdAsync(ghostRoutine.Id, table);
+            List<SetArray> ghostSetArrayList = [];
+            foreach (var set in ghostSetList)
+            {
+                var setArray = await storage.GetSetsArrayBySetId(set.Id, table);
+                ghostSetArrayList.AddRange(setArray);
+            }
+
+            // Add ghost data to real data
+            table = "";
+            var routine = await storage.AddRoutineAsync(ghostRoutine.Id, userId, ghostRoutine.Date, table);
+            foreach (var ghostSet in ghostSetList) await storage.AddExercisesToSetAsync(ghostSet.Id, ghostRoutine.Id, ghostSet.ExerciseId, ghostSet.Order, table);
+            foreach (var ghostSetArray in ghostSetArrayList) if (ghostSetArray.Weight is not null and >= 0 && ghostSetArray.Sets is not null and > 0 && ghostSetArray.Reps is not null and > 0) await storage.AddExerciseSetFromArrayAsync(ghostSetArray.SetId, ghostSetArray.Weight.Value, ghostSetArray.Sets.Value, ghostSetArray.Reps.Value, ghostSetArray.Order, table);
+
+            // Delete ghost data
+            await storage.DeleteGhostDataAsync(ghostRoutine.Date.Date);
+
+            return routine.Id;
         }
 
         private static string TableGenerator(int submissionType)

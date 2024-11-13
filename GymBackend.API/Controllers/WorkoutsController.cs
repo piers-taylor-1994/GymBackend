@@ -121,5 +121,11 @@ namespace GymBackend.API.Controllers
 
             return routines.Select(r => new RecentWorkout() {  Date = r.Date, MuscleArea = r.MuscleArea, Username = usernames[r.UserId] }).ToList();
         }
+
+        [HttpPost("ghost")]
+        public async Task<Guid> ResurrectGhost(GhostData data)
+        {
+            return await service.ResurrectGhostAsync(authService.CurrentUserId(), data.RoutineId, data.Date).ConfigureAwait(false);
+        }
     }
 }
