@@ -37,6 +37,6 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<ExerciseMuscle> AddExerciseMuscleAsync(Guid exerciseId, MuscleGroup muscle);
         Task<List<Routine>> GetRecentWorkoutsAsync();
 
-        Task DeleteGhostDataAsync(DateTime date);
+        Task DeleteRoutineDataAsync(Guid userId, DateTime date, string table);
     }
 }

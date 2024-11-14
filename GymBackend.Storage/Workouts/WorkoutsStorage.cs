@@ -349,22 +349,22 @@ ORDER BY Date desc";
             return routines.ToList();
         }
 
-        public async Task DeleteGhostDataAsync(DateTime date)
+        public async Task DeleteRoutineDataAsync(Guid userId, DateTime date, string table)
         {
-            var ghostRoutines = await database.ExecuteQueryAsync<Routine>("SELECT * FROM [Workouts].[GhostRoutine]");
-            var ghostRoutine = ghostRoutines.FirstOrDefault(g => g.Date.Date == date.Date);
+            var routines = await database.ExecuteQueryAsync<Routine>($"SELECT * FROM [Workouts].[{table}Routine] WHERE UserId = @userId", new { userId });
+            var routine = routines.FirstOrDefault(g => g.Date.Date == date.Date);
 
-            if (ghostRoutine != null)
+            if (routine != null)
             {
-                var ghostSetsIds = await database.ExecuteQueryAsync<Guid>("SELECT [Id] FROM [Workouts].[GhostSets] WHERE [RoutineId] = @Id", new { ghostRoutine.Id });
+                var setsIds = await database.ExecuteQueryAsync<Guid>($"SELECT [Id] FROM [Workouts].[{table}Sets] WHERE [RoutineId] = @Id", new { routine.Id });
 
-                foreach (var ghostSetId in ghostSetsIds)
+                foreach (var setId in setsIds)
                 {
-                    await database.ExecuteAsync("DELETE FROM [Workouts].[GhostSetsArray] WHERE [SetId] = @ghostSetId", new { ghostSetId });
-                    await database.ExecuteAsync("DELETE FROM [Workouts].[GhostSets] WHERE [Id] = @ghostSetId", new { ghostSetId });
+                    await database.ExecuteAsync($"DELETE FROM [Workouts].[{table}SetsArray] WHERE [SetId] = @setId", new { setId });
+                    await database.ExecuteAsync($"DELETE FROM [Workouts].[{table}Sets] WHERE [Id] = @setId", new { setId });
                 }
 
-                await database.ExecuteAsync("DELETE FROM [Workouts].[GhostRoutine] WHERE [Id] = @Id", new { ghostRoutine.Id });
+                await database.ExecuteAsync($"DELETE FROM [Workouts].[{table}Routine] WHERE [Id] = @Id", new { routine.Id });
             }
         }
     }

@@ -127,5 +127,14 @@ namespace GymBackend.API.Controllers
         {
             return await service.ResurrectGhostAsync(authService.CurrentUserId(), data.RoutineId, data.Date).ConfigureAwait(false);
         }
+
+        [HttpDelete("routine")]
+        public async Task DeleteRoutine(Guid userId, DateTime date, string submissionTypeString)
+        {
+            string submissionTypeCase = submissionTypeString[0].ToString().ToUpper() + submissionTypeString[1..].ToLower();
+            var submissionType = Enum.Parse(typeof(SubmissionType), submissionTypeCase);
+
+            await service.DeleteRoutineAsync(userId, date, (int)submissionType).ConfigureAwait(false);
+        }
     }
 }

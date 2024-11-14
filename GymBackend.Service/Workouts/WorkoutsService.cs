@@ -45,9 +45,6 @@ namespace GymBackend.Service.Workouts
 
         }
 
-        //TODO: Add a controller method to add a ghost routine to the GhostRoutine/GhostSets/GhostSetsArray tables
-        //Then a user can add a ghost routine if they forgot to click the submit button
-        //It'll hijack all of the existing addroutine stuff
         public async Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets, int submissionType)
         {
             if (exerciseSets.Count == 0) throw new Exception("No exercises to add");
@@ -77,7 +74,8 @@ namespace GymBackend.Service.Workouts
                 }
             }
 
-            if ((SubmissionType)submissionType == SubmissionType.Real) await storage.DeleteGhostDataAsync(DateTime.Now.Date);
+            // Delete ghost data
+            if ((SubmissionType)submissionType == SubmissionType.Real) await storage.DeleteRoutineDataAsync(userId, DateTime.Now.Date, TableGenerator((int)SubmissionType.Ghost));
 
             return routine.Id;
         }
@@ -252,7 +250,8 @@ namespace GymBackend.Service.Workouts
             foreach (var ghostSetArray in ghostSetArrayList) if (ghostSetArray.Weight is not null and >= 0 && ghostSetArray.Sets is not null and > 0 && ghostSetArray.Reps is not null and > 0) await storage.AddExerciseSetFromArrayAsync(ghostSetArray.SetId, ghostSetArray.Weight.Value, ghostSetArray.Sets.Value, ghostSetArray.Reps.Value, ghostSetArray.Order, table);
 
             // Delete ghost data
-            await storage.DeleteGhostDataAsync(ghostRoutine.Date.Date);
+            table = "Ghost";
+            await storage.DeleteRoutineDataAsync(userId, ghostRoutine.Date.Date, table);
 
             return routine.Id;
         }
@@ -260,6 +259,12 @@ namespace GymBackend.Service.Workouts
         private static string TableGenerator(int submissionType)
         {
             return (SubmissionType)submissionType == SubmissionType.Ghost ? "Ghost" : string.Empty;
+        }
+
+        public async Task DeleteRoutineAsync(Guid userId, DateTime date, int submissionType)
+        {
+            var table = TableGenerator(submissionType);
+            await storage.DeleteRoutineDataAsync(userId, date.Date, table);
         }
     }
 }
