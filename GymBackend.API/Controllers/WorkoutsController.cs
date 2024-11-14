@@ -35,28 +35,28 @@ namespace GymBackend.API.Controllers
         }
 
         [HttpGet("routine")]
-        public async Task<RoutineSet?> GetRoutine()
+        public async Task<RoutineSet?> GetRoutine(int submissionType)
         {
-            return await service.GetRoutineAsync(authService.CurrentUserId()).ConfigureAwait(false);
+            return await service.GetRoutineAsync(authService.CurrentUserId(), submissionType).ConfigureAwait(false);
         }
 
         [HttpPost("routine")]
-        public async Task<Guid> AddRoutine(List<ExerciseSets> exerciseSets)
+        public async Task<Guid> AddRoutine(List<ExerciseSets> exerciseSets, int submissionType)
         {
-            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseSets).ConfigureAwait(false);
+            return await service.AddRoutineAsync(authService.CurrentUserId(), exerciseSets, submissionType).ConfigureAwait(false);
         }
 
 
         [HttpGet("routine/history")]
-        public async Task<List<Routine>> GetRoutinesHistory()
+        public async Task<List<Routine>> GetRoutinesHistory(int submissionType)
         {
-            return await service.GetRoutinesHistoryAsync(authService.CurrentUserId()).ConfigureAwait(false);
+            return await service.GetRoutinesHistoryAsync(authService.CurrentUserId(), submissionType).ConfigureAwait(false);
         }
 
         [HttpGet("routine/history/{id}")]
-        public async Task<RoutineSet> GetRoutineHistory(string id)
+        public async Task<RoutineSet> GetRoutineHistory(string id, int submissionType)
         {
-            return await service.GetRoutineHistoryAsync(id).ConfigureAwait(false);
+            return await service.GetRoutineHistoryAsync(id, submissionType).ConfigureAwait(false);
         }
 
         [HttpPost("routine/last")]
@@ -120,6 +120,21 @@ namespace GymBackend.API.Controllers
             var usernames = await authManager.GetUsernameAsync(routines.Select(r => r.UserId));
 
             return routines.Select(r => new RecentWorkout() {  Date = r.Date, MuscleArea = r.MuscleArea, Username = usernames[r.UserId] }).ToList();
+        }
+
+        [HttpPost("ghost")]
+        public async Task<Guid> ResurrectGhost(GhostData data)
+        {
+            return await service.ResurrectGhostAsync(authService.CurrentUserId(), data.RoutineId, data.Date).ConfigureAwait(false);
+        }
+
+        [HttpDelete("routine")]
+        public async Task DeleteRoutine(Guid userId, DateTime date, string submissionTypeString)
+        {
+            string submissionTypeCase = submissionTypeString[0].ToString().ToUpper() + submissionTypeString[1..].ToLower();
+            var submissionType = Enum.Parse(typeof(SubmissionType), submissionTypeCase);
+
+            await service.DeleteRoutineAsync(userId, date, (int)submissionType).ConfigureAwait(false);
         }
     }
 }

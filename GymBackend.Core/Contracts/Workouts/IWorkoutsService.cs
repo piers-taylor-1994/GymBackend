@@ -6,10 +6,10 @@ namespace GymBackend.Core.Contracts.Workouts
     {
         Task<List<Exercise>> GetExercisesAsync();
         Task<List<Guid>> SearchExercisesAsync(MuscleGroup muscle);
-        Task<RoutineSet?> GetRoutineAsync(Guid userId);
-        Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets);
-        Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId);
-        Task<RoutineSet> GetRoutineHistoryAsync(string id);
+        Task<RoutineSet?> GetRoutineAsync(Guid userId, int submissionType);
+        Task<Guid> AddRoutineAsync(Guid userId, List<ExerciseSets> exerciseSets, int submissionType);
+        Task<List<Routine>> GetRoutinesHistoryAsync(Guid userId, int submissionType);
+        Task<RoutineSet> GetRoutineHistoryAsync(string id, int submissionType);
         Task<List<Set>> GetLastSetForExercisesAsync(Guid userId, List<string> exerciseIds);
         Task<List<MaxSet>> GetExerciseLeaderboardAsync(string exerciseId);
         Task<RoutineTemplate> AddRoutineTemplateAsync(Guid userId, string name, List<string> exerciseIds);
@@ -20,5 +20,7 @@ namespace GymBackend.Core.Contracts.Workouts
         Task<WorkoutsCount> GetWorkoutsCountAsync(Guid userId);
         Task<Exercise> AddExerciseAsync(string name, List<MuscleGroup> muscles);
         Task<List<Routine>> GetMostRecentWorkoutsAsync();
+        Task<Guid> ResurrectGhostAsync(Guid userId, Guid routineId, DateTime date);
+        Task DeleteRoutineAsync(Guid userId, DateTime date, int submissionType);
     }
 }
