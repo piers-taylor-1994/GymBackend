@@ -3,6 +3,7 @@ using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Contracts.Booking;
 using GymBackend.Core.Contracts.Patch;
+using GymBackend.Core.Contracts.Swimming;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
 using GymBackend.Service.Booking;
@@ -73,6 +74,8 @@ builder.Services.AddTransient<IPatchService, PatchService>();
 builder.Services.AddTransient<IPatchStorage, PatchStorage>();
 builder.Services.AddTransient<IBookingService, BookingService>();
 builder.Services.AddTransient<IBookingStorage, BookingStorage>();
+builder.Services.AddTransient<ISwimmingService, SwimmingService>();
+builder.Services.AddTransient<ISwimmingStorage, SwimmingStorage>();
 
 builder.Services.AddHttpClient();
 
