@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GymBackend.Core.Domains.Swimming
+namespace GymBackend.Core.Domains.Workouts
 {
     public class Swimming
     {
@@ -16,15 +16,15 @@ namespace GymBackend.Core.Domains.Swimming
         public bool Review { get; set; }
         public string? Explanation { get; set; }
 
-        public Swimming(Guid userId, DateTime date, int lengths, int timeSwimming, bool review, string explanation)
-        {
-            UserId = userId;
-            Date = date;
-            Lengths = lengths;
-            TimeSwimming = timeSwimming;
-            Review = review;
-            Explanation = explanation;
+        //public Swimming(Guid userId, DateTime date, int lengths, int timeSwimming, bool review, string explanation)
+        //{
+        //    UserId = userId;
+        //    Date = date;
+        //    Lengths = lengths;
+        //    TimeSwimming = timeSwimming;
+        //    Review = review;
+        //    Explanation = explanation;
 
-        }
+        //}
     }
 }

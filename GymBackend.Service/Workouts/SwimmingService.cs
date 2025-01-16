@@ -1,4 +1,5 @@
 ﻿using GymBackend.Core.Contracts.Swimming;
+using GymBackend.Core.Domains.Workouts;
 
 namespace GymBackend.Service.Workouts
 {
@@ -11,10 +12,22 @@ namespace GymBackend.Service.Workouts
             this.storage = storage;
         }
 
-        public async Task AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation)
+        public async Task<Swimming> AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation)
         {
             Guid id = Guid.NewGuid();
-            await storage.AddASwimAsync(id, userId, dateTime, lengths, timeSwimming, review, explanation);
+            return await storage.AddASwimAsync(id, userId, dateTime, lengths, timeSwimming, review, explanation);
+        }
+        public async Task<Swimming> GetRecentSwimAsync(Guid userId)
+        {
+            return await storage.GetRecentSwimAsync(userId);
+        }
+        public async Task<List<Swimming>> GetRecentSwimsAsync(Guid userId)
+        {
+            return await storage.GetRecentSwimsAsync(userId);
+        }
+        public async Task<Swimming> FindASwimAsync(Guid userId, Guid id)
+        {
+            return await storage.FindASwimAsync(userId, id);
         }
     }
 }
