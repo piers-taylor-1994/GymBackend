@@ -1,6 +1,7 @@
 ﻿using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Contracts.Swimming;
+using GymBackend.Core.Domains.Swimming;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymBackend.API.Controllers
@@ -19,11 +20,14 @@ namespace GymBackend.API.Controllers
             this.authService = authService ?? throw new ArgumentNullException(nameof(authService));
             this.authManager = authManager ?? throw new ArgumentNullException(nameof(authManager));
         }
+        
 
-        [HttpPost("")]
-        public async Task AddASwim()
+        [HttpPost("add")]
+        public async Task AddASwim(int lengths, int timeSwimming, bool review, string? explanation)
         {
-            await service.AddASwimAsync(Guid.NewGuid(),DateTime.Now,0,0,true,null).ConfigureAwait(false);
+            DateTime today = DateTime.Now;
+            var currentUser = authService.CurrentUserId;
+            await service.AddASwimAsync(authService.CurrentUserId(),today,lengths,timeSwimming,review,explanation).ConfigureAwait(false);
         }
     }
 }

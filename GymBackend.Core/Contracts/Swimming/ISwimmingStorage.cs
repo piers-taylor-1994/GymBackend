@@ -8,6 +8,6 @@ namespace GymBackend.Core.Contracts.Swimming
 {
     public interface ISwimmingStorage
     {
-        public Task AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation);
+        public Task AddASwimAsync(Guid id, Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation);
     }
 }

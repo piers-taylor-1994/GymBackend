@@ -13,7 +13,8 @@ namespace GymBackend.Service.Workouts
 
         public async Task AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation)
         {
-            
+            Guid id = Guid.NewGuid();
+            await storage.AddASwimAsync(id, userId, dateTime, lengths, timeSwimming, review, explanation);
         }
     }
 }
