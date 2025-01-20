@@ -54,6 +54,12 @@ namespace GymBackend.API.Controllers
             var currentUser = authService.CurrentUserId();
             return await service.UpdateASwimAsync(currentUser, id, lengths, timeSwimming, review, explanation);
         }
+        [HttpDelete("DeleteSwim/{id}")]
+        public async Task DeleteASwim(Guid id)
+        {
+            var currentUser = authService.CurrentUserId();
+            await service.DeleteASwimAsync(currentUser, id);
+        }
 
     }
 }

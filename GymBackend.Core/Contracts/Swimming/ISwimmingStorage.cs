@@ -13,6 +13,7 @@ namespace GymBackend.Core.Contracts.Swimming
         public Task<List<Domains.Workouts.Swimming>> GetRecentSwimsAsync(Guid userId);
         public Task<Domains.Workouts.Swimming> FindASwimAsync(Guid userId, Guid id);
         public Task<Domains.Workouts.Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, bool review, string? explanation);
+        public Task DeleteASwimAsync(Guid userId, Guid id);
         
     }
     
