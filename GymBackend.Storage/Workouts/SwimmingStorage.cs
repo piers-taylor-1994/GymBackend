@@ -62,5 +62,15 @@ WHERE [UserId] = @userId AND [Id] = @id";
             var swim = await database.ExecuteQuerySingleAsync<Swimming>(sqlGet, new { userId, id });
             return swim;
         }
+        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        {
+            var sqlPut = @"
+UPDATE [Workouts].[Swimming]
+SET [Lengths] = @lengths , [TimeSwimming] = @timeSwimming , [Review] = @review , [Explanation] = @explanation
+WHERE [UserId] = @userId AND [Id] = @id
+";
+            await database.ExecuteQueryAsync<Swimming>(sqlPut, new { userId, id, lengths, timeSwimming, review, explanation });
+            return await FindASwimAsync(userId, id);
+        }
     }
 }

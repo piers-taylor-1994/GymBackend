@@ -48,6 +48,12 @@ namespace GymBackend.API.Controllers
             //Guid id = Guid.Parse("0C2FB9D6-C991-473A-A326-1A0719C47F1F");
             return await service.FindASwimAsync(currentUser, id);
         }
+        [HttpPut("UpdateSwim/{id}")]
+        public async Task<Swimming> UpdateASwim(Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        {
+            var currentUser = authService.CurrentUserId();
+            return await service.UpdateASwimAsync(currentUser, id, lengths, timeSwimming, review, explanation);
+        }
 
     }
 }

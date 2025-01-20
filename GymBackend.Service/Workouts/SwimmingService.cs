@@ -29,5 +29,9 @@ namespace GymBackend.Service.Workouts
         {
             return await storage.FindASwimAsync(userId, id);
         }
+        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        {
+            return await storage.UpdateASwimAsync(userId, id, lengths, timeSwimming, review, explanation);
+        }
     }
 }
