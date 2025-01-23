@@ -37,5 +37,9 @@ namespace GymBackend.Service.Workouts
         {
             await storage.DeleteASwimAsync(userId, id);
         }
+        public async Task<List<Swimming>> GetAllSwimsAsync(Guid userId)
+        {
+            return await storage.GetAllSwimsAsync(userId);
+        }
     }
 }

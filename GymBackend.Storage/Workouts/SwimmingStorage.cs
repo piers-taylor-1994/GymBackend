@@ -79,5 +79,12 @@ DELETE [Workouts].[Swimming] WHERE [UserId] = @userId AND [Id] = @id
 ";
             await database.ExecuteAsync(sqlDelete, new { userId, id });
         }
+        public async Task<List<Swimming>> GetAllSwimsAsync(Guid userId)
+        {
+            var sqlGet = @"
+SELECT * FROM [Workouts].[Swimming] WHERE [UserId] = @userId";
+            var allSwims = await database.ExecuteQueryAsync<Swimming>(sqlGet, new { userId });
+            return allSwims.ToList();
+        }
     }
 }
