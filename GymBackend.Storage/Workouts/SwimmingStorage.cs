@@ -86,5 +86,24 @@ SELECT * FROM [Workouts].[Swimming] WHERE [UserId] = @userId";
             var allSwims = await database.ExecuteQueryAsync<Swimming>(sqlGet, new { userId });
             return allSwims.ToList();
         }
+        public async Task<int> GetWeeksSwimsAsync(Guid userId, DateTime start, DateTime end)
+        {
+            var sqlGet = @"
+SELECT COUNT(*)
+FROM [Workouts].[Swimming]
+WHERE [UserId] = @userId AND [Date] >= @start AND [Date] <= @end";
+            return await database.ExecuteQuerySingleAsync<int>(sqlGet, new { userId, start, end });
+        }
+        public async Task<int> GetMonthsSwimsAsync(Guid userId, DateTime yearMonth)
+        {
+            var sql = @"
+SELECT COUNT(*)
+FROM [Workouts].[Swimming]
+WHERE UserId = @userId
+AND Date >= @yearMonth
+AND Date <= DATEADD(month, 1, @yearMonth)";
+
+            return await database.ExecuteQuerySingleAsync<int>(sql, new { userId, yearMonth });
+        }
     }
 }

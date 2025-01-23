@@ -37,6 +37,24 @@ namespace GymBackend.Service.Workouts
         {
             await storage.DeleteASwimAsync(userId, id);
         }
+        public async Task<WorkoutsCount> GetSwimCountAsync(Guid userId)
+        {
+            int i = 0;
+            var today = DateTime.Now;
+            while (today.DayOfWeek != DayOfWeek.Monday)
+            {
+                today = today.AddDays(1);
+                i++;
+            }
+            var minusWeek = i + 7;
+            var thisWeek = await storage.GetWeeksSwimsAsync(userId, DateTime.Now.AddDays(-i), today);
+            var lastWeek = await storage.GetWeeksSwimsAsync(userId, DateTime.Now.AddDays(-minusWeek), DateTime.Now.AddDays(-i));
+            var thisMonth = await storage.GetMonthsSwimsAsync(userId, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01));
+            var lastMonth = await storage.GetMonthsSwimsAsync(userId, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01).AddMonths(-1));
+
+            return new WorkoutsCount(thisWeek, lastWeek, thisMonth, lastMonth);
+
+        }
         public async Task<List<Swimming>> GetAllSwimsAsync(Guid userId)
         {
             return await storage.GetAllSwimsAsync(userId);
