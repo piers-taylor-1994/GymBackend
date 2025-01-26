@@ -14,6 +14,7 @@
         Quads = 9,
         Hamstrings = 10,
         Calves = 11,
-        Thighs = 12
+        Thighs = 12,
+        Cardio = 13
     }
 }
