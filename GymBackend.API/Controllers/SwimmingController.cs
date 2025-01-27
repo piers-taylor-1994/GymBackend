@@ -73,5 +73,6 @@ namespace GymBackend.API.Controllers
             return await service.GetAllSwimsAsync(currentUser);
         }
 
+
     }
 }

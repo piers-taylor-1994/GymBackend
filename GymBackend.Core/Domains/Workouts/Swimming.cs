@@ -15,6 +15,9 @@ namespace GymBackend.Core.Domains.Workouts
         public int TimeSwimming { get; set; }
         public bool Review { get; set; }
         public string? Explanation { get; set; }
+        public Distances Distances => new(Lengths);
+
+        
 
         //public Swimming(Guid userId, DateTime date, int lengths, int timeSwimming, bool review, string explanation)
         //{
@@ -26,5 +29,21 @@ namespace GymBackend.Core.Domains.Workouts
         //    Explanation = explanation;
 
         //}
+    }
+    
+    public class Distances
+    {
+        public int Meters { get; set; }
+        public double Kilometers { get; set; }
+        public double Yards { get; set; }
+        public double Miles { get; set; }
+
+        public Distances(int lengths)
+        {
+            Meters = lengths * 25;
+            Kilometers = Meters * 0.001;
+            Yards = Meters * 1.094;
+            Miles = Math.Round(Kilometers / 1.609, 2);
+        }
     }
 }
