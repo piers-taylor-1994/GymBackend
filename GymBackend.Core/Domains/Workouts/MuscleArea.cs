@@ -4,6 +4,8 @@
     {
         Upper = 0,
         Core = 1,
-        Lower = 2
+        Lower = 2,
+        Cardio = 3,
+        Mixed = 4
     }
 }

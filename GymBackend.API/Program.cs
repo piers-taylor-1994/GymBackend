@@ -45,10 +45,13 @@ builder.Services
     .AddControllers(c =>
     {
         // This makes endpoints requirer a bearer token
-        var policy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .Build();
-        c.Filters.Add(new AuthorizeFilter(policy));
+        if (!builder.Environment.IsDevelopment())
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            c.Filters.Add(new AuthorizeFilter(policy));
+        }
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -139,14 +139,15 @@ WHERE [RoutineId] = @routineId";
         public async Task<MuscleArea> GetRoutineMuscleAreas(Guid routineId)
         {
             var sql = @"
-  SELECT TOP(1) e.MuscleArea
+  SELECT e.MuscleArea, COUNT(*)
   FROM [Workouts].[Exercises] e
   INNER JOIN [Workouts].[Sets] s on e.[Id] = s.[ExerciseId]
   WHERE s.[RoutineId] = @routineId
   GROUP BY e.MuscleArea
   ORDER BY COUNT(*) DESC";
 
-            return await database.ExecuteQuerySingleAsync<MuscleArea>(sql, new { routineId });
+            var muscles = await database.ExecuteQueryAsync<(MuscleArea muscle, int count)>(sql, new { routineId });
+            return (muscles.Where(m => m.count == muscles.FirstOrDefault().count).Count() > 1) ? MuscleArea.Mixed : muscles.FirstOrDefault().muscle;
         }
 
 
