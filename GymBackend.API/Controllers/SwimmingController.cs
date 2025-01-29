@@ -29,11 +29,11 @@ namespace GymBackend.API.Controllers
             
             return await service.AddASwimAsync(authService.CurrentUserId(),today,lengths,timeSwimming,review,explanation).ConfigureAwait(false);
         }
-        [HttpGet("RecentSwim")]
-        public async Task<Swimming> GetRecentSwim()
+        [HttpGet("TodaysSwim")]
+        public async Task<Swimming?> GetTodaysSwim()
         {
             var currentUser = authService.CurrentUserId();
-            return await service.GetRecentSwimAsync(currentUser);
+            return await service.GetTodaysSwimAsync(currentUser);
         }
         [HttpGet("RecentSwims")]
         public async Task<List<Swimming>> GetRecentSwims()

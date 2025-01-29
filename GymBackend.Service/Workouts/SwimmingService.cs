@@ -15,11 +15,21 @@ namespace GymBackend.Service.Workouts
         public async Task<Swimming> AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation)
         {
             Guid id = Guid.NewGuid();
-            return await storage.AddASwimAsync(id, userId, dateTime, lengths, timeSwimming, review, explanation);
+            var swim = await GetTodaysSwimAsync(userId);
+            if (swim == null)
+            {
+                return await storage.AddASwimAsync(id, userId, dateTime, lengths, timeSwimming, review, explanation);
+            }
+            else
+            {
+                var updateSwim = await UpdateASwimAsync(userId, swim.Id, lengths, timeSwimming, review, explanation);
+                return updateSwim;
+            }
         }
-        public async Task<Swimming> GetRecentSwimAsync(Guid userId)
+        public async Task<Swimming?> GetTodaysSwimAsync(Guid userId)
         {
-            return await storage.GetRecentSwimAsync(userId);
+            var today = DateTime.Now;
+            return await storage.GetTodaysSwimAsync(userId, today);
         }
         public async Task<List<Swimming>> GetRecentSwimsAsync(Guid userId)
         {

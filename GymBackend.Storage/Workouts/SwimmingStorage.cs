@@ -36,13 +36,15 @@ VALUES (
             return await FindASwimAsync(userId, id);
             
         }
-        public async Task<Swimming> GetRecentSwimAsync(Guid userId)
+        public async Task<Swimming?> GetTodaysSwimAsync(Guid userId, DateTime today)
         {
-            var sqlGet = @"
-SELECT TOP 1 * FROM [Workouts].[Swimming] WHERE [UserId] = @userId 
-";
-            var swim = await database.ExecuteQuerySingleAsync<Swimming>(sqlGet, new { userId });
-            return swim;
+            //            var sqlGet = @"
+            //SELECT TOP 1 * FROM [Workouts].[Swimming] WHERE [UserId] = @userId AND [Date] = @today
+            //";
+            //            var swim = await database.ExecuteQuerySingleAsync<Swimming>(sqlGet, new { userId, today });
+            //            return swim;
+            var swims = await GetAllSwimsAsync(userId);
+            return swims.Where(e => e.Date.Date == today.Date).FirstOrDefault();
         }
         public async Task<List<Swimming>> GetRecentSwimsAsync(Guid userId)
         {
