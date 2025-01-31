@@ -39,6 +39,8 @@ namespace GymBackend.Core.Domains.Workouts
         public double Miles { get; set; }
         public double Mph {  get; set; }
         public double Kph {  get; set; }
+        public double MetersPerHour { get; set; }
+        public double MetersPerMinute { get; set; }
 
         public Distances(int lengths, int timeSwimming)
         {
@@ -50,10 +52,9 @@ namespace GymBackend.Core.Domains.Workouts
             double perHour = (double)60 / timeSwimming;
             
             Mph = Math.Round(Miles * perHour, 2);
-            
-
             Kph = Math.Round(Kilometers * perHour, 2);
-            
+            MetersPerHour = Math.Round(Meters * perHour, 2);
+            MetersPerMinute = Math.Round(Meters * perHour / 60, 2);
         }
     }
 }
