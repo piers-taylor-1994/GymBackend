@@ -6,14 +6,21 @@ using System.Threading.Tasks;
 
 namespace GymBackend.Core.Domains.Workouts
 {
+    public enum ReviewEnum
+    {
+        Average,
+        Good,
+        Bad
+    }
     public class Swimming
     {
+        
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public DateTime Date { get; set; }
         public int Lengths { get; set; }
         public int TimeSwimming { get; set; }
-        public bool Review { get; set; }
+        public ReviewEnum Review { get; set; }
         public string? Explanation { get; set; }
         public Distances Distances => new(Lengths, TimeSwimming);
 

@@ -12,7 +12,7 @@ namespace GymBackend.Service.Workouts
             this.storage = storage;
         }
 
-        public async Task<Swimming> AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, bool review, string explanation)
+        public async Task<Swimming> AddASwimAsync(Guid userId, DateTime dateTime, int lengths, int timeSwimming, ReviewEnum review, string explanation)
         {
             Guid id = Guid.NewGuid();
             var swim = await GetTodaysSwimAsync(userId);
@@ -41,7 +41,7 @@ namespace GymBackend.Service.Workouts
             //swim.Distances = new Distances(swim.Lengths);
             return swim;
         }
-        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, ReviewEnum review, string? explanation)
         {
             return await storage.UpdateASwimAsync(userId, id, lengths, timeSwimming, review, explanation);
         }
