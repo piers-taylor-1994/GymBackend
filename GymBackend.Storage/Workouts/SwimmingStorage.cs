@@ -18,7 +18,7 @@ namespace GymBackend.Storage.Workouts
             this.database = database;
         }
 
-        public async Task<Swimming> AddASwimAsync(Guid id, Guid userId, DateTime date, int lengths, int timeSwimming, bool review, string explanation)
+        public async Task<Swimming> AddASwimAsync(Guid id, Guid userId, DateTime date, int lengths, int timeSwimming, ReviewEnum review, string explanation)
         {
             var sqlCreate = $@"
 INSERT INTO [Workouts].[Swimming] ([Id],[UserId], [Date], [Lengths], [TimeSwimming], [Review], [Explanation])
@@ -64,7 +64,7 @@ WHERE [UserId] = @userId AND [Id] = @id";
             var swim = await database.ExecuteQuerySingleAsync<Swimming>(sqlGet, new { userId, id });
             return swim;
         }
-        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        public async Task<Swimming> UpdateASwimAsync(Guid userId, Guid id, int lengths, int timeSwimming, ReviewEnum review, string? explanation)
         {
             var sqlPut = @"
 UPDATE [Workouts].[Swimming]

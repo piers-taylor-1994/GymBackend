@@ -23,7 +23,7 @@ namespace GymBackend.API.Controllers
         
 
         [HttpPost("AddSwim")]
-        public async Task<Swimming> AddASwim(int lengths, int timeSwimming, bool review, string? explanation)
+        public async Task<Swimming> AddASwim(int lengths, int timeSwimming, ReviewEnum review, string? explanation)
         {
             DateTime today = DateTime.Now;
             
@@ -49,7 +49,7 @@ namespace GymBackend.API.Controllers
             return await service.FindASwimAsync(currentUser, id);
         }
         [HttpPut("UpdateSwim/{id}")]
-        public async Task<Swimming> UpdateASwim(Guid id, int lengths, int timeSwimming, bool review, string? explanation)
+        public async Task<Swimming> UpdateASwim(Guid id, int lengths, int timeSwimming, ReviewEnum review, string? explanation)
         {
             var currentUser = authService.CurrentUserId();
             return await service.UpdateASwimAsync(currentUser, id, lengths, timeSwimming, review, explanation);
