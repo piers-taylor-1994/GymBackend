@@ -3,6 +3,7 @@ using GymBackend.Core.Contracts;
 using GymBackend.Core.Contracts.Auth;
 using GymBackend.Core.Contracts.Booking;
 using GymBackend.Core.Contracts.Patch;
+using GymBackend.Core.Contracts.Swimming;
 using GymBackend.Core.Contracts.Workouts;
 using GymBackend.Service.Auth;
 using GymBackend.Service.Booking;
@@ -44,10 +45,13 @@ builder.Services
     .AddControllers(c =>
     {
         // This makes endpoints requirer a bearer token
-        var policy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .Build();
-        c.Filters.Add(new AuthorizeFilter(policy));
+        if (!builder.Environment.IsDevelopment())
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            c.Filters.Add(new AuthorizeFilter(policy));
+        }
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -73,6 +77,8 @@ builder.Services.AddTransient<IPatchService, PatchService>();
 builder.Services.AddTransient<IPatchStorage, PatchStorage>();
 builder.Services.AddTransient<IBookingService, BookingService>();
 builder.Services.AddTransient<IBookingStorage, BookingStorage>();
+builder.Services.AddTransient<ISwimmingService, SwimmingService>();
+builder.Services.AddTransient<ISwimmingStorage, SwimmingStorage>();
 
 builder.Services.AddHttpClient();
 

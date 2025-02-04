@@ -202,15 +202,19 @@ namespace GymBackend.Service.Workouts
         {
             Guid exerciseId = Guid.NewGuid();
 
-            Dictionary<MuscleArea, int> muscleAreaCount = new()
+            List<(MuscleArea muscle, int count)> muscleAreaCount = new()
             {
-                { MuscleArea.Upper, muscles.Where(m => (int)m <= 5).Count() },
-                { MuscleArea.Core, muscles.Where(m => (int)m == 6).Count() },
-                { MuscleArea.Lower, muscles.Where(m => (int)m > 6).Count() },
-
+                { new(MuscleArea.Upper, muscles.Where(m => (int)m <= 5).Count()) },
+                { new(MuscleArea.Core, muscles.Where(m => (int)m == 6).Count()) },
+                { new(MuscleArea.Lower, muscles.Where(m => (int) m is > 6 and not 13).Count()) },
+                { new(MuscleArea.Cardio, muscles.Where(m => (int)m == 13).Count()) }
             };
 
-            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleArea = muscleAreaCount.MaxBy(t => t.Value).Key, Name = name });
+            var maxMuscleGroup = muscleAreaCount.MaxBy(m => m.count);
+            var muscleArea = maxMuscleGroup.muscle;
+            if (muscleAreaCount.Where(m => m.count == maxMuscleGroup.count).Count() > 1) muscleArea = MuscleArea.Mixed;
+
+            var exercise = await storage.AddExerciseAsync(new Exercise() { ExerciseId = exerciseId, MuscleArea = muscleArea, Name = name });
             foreach (var muscle in muscles) { await storage.AddExerciseMuscleAsync(exerciseId, muscle); }
 
             return exercise;
@@ -222,7 +226,8 @@ namespace GymBackend.Service.Workouts
 
             foreach (var routine in routines)
             {
-                routine.MuscleArea = await storage.GetRoutineMuscleAreas(routine.Id);
+                var muscle = await storage.GetRoutineMuscleAreas(routine.Id);
+                routine.MuscleArea = muscle;
             }
 
             return routines;
