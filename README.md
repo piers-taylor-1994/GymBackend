@@ -38,6 +38,6 @@ The API is split up into 4 groupings of endpoints that the Gym Frontend calls on
 <img width="2190" height="1548" alt="image" src="https://github.com/user-attachments/assets/0405b445-d0d3-4a48-88c7-9b5eef52a991" />
 
 ## Live setup
-- To enable interconnectivity, the live version of this backend is setup and hosted on Microsoft Azure
+- To enable interconnectivity, the live version of this backend is setup and hosted on Microsoft Azure as an App Service
 - I've setup the YAML files of this repository to automatically redeploy latest code to the web app when a pull request is completed to Main
 <img width="2558" height="942" alt="image" src="https://github.com/user-attachments/assets/c6573eaa-4a9f-454a-8fd7-0c40c7687c35" />
