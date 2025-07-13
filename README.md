@@ -3,6 +3,7 @@
 - REST API developed in C# .NET 8
 - JWT access tokens used for secure authentication
 - Dapper ORM
+- Password encryption
 ## Swagger
 The Gym Backend integrated with Swagger for ease-of-testing.
 The API is split up into 4 groupings of endpoints that the Gym Frontend calls on demand.
